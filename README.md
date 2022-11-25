@@ -1,2 +1,2 @@
 # TIPE-Eclairage
-TIPE Quentin POINTEAU MPI - Matthieu XILLO MPI* - Lycée Pierre de Fermat
+Ceci est le répertoire pour héberger le code et les documents communs pour le TIPE.
