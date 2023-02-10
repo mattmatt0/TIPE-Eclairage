@@ -1,0 +1,5 @@
+add_executable(DetectionContours main.cpp)
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+find_package( OpenCV REQUIRED )
+target_link_libraries(DetectionContours ${OpenCV_LIBS} )
