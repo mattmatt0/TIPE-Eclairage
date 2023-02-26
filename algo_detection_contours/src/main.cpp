@@ -48,9 +48,13 @@ int main(int argc, char** argv)
 		cv::phase(gradient_x, gradient_y, direction, true); // "true" pour avoir des degrés	
 		cv::magnitude(gradient_x, gradient_y, norme);
 
+		// Décision des pixels qui font partie d'un contour ou non
 		cv::Mat contour;
 		cv::threshold(norme, contour, 0.5, 1.0, cv::THRESH_BINARY);
 
+		// Ajout de l'orientation dans une matrice à trois canaux 
+		// (le 1er représentant l'orientation, le 2e valant 1.0 tout le temps 
+		//     et le 3e l'appartenance à un contour)
 		std::vector<cv::Mat> canaux;
 		canaux.push_back(direction);
 		canaux.push_back(cv::Mat(direction.size(), CV_32F, 1.0));
@@ -61,14 +65,14 @@ int main(int argc, char** argv)
 
 	// Calcul de S
 	cv::Mat ensemble_S = cv::Mat::zeros(contours[0].size(), CV_32F);
+	cv::Mat ensemble_O = cv::Mat::zeros(contours[0].size(), CV_32F);
 	for(int i = 0; i < NB_SEUILS; ++i)
 	{
-		cv::Mat hsv[3];
+		cv::Mat hsv[3]; // hsv[2] -> appartenance d'un pixel à la bordure, hsv[0] -> orientation de la bordure en ce pixel
 		split(contours[i],hsv);
 		ensemble_S += 1.0/NB_SEUILS * hsv[2];
 	}
 
-	// TODO: Calcul de O
 
 
 	// On affiche les deux ensembles
