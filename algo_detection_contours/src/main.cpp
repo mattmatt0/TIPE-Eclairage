@@ -19,22 +19,6 @@ int main(int argc, char** argv)
 	// Première étape: séparation des pixels selon différent seuils:
 	cv::Mat ensemble_niveau = cv::Mat::zeros(image_source.size(), CV_8UC3);
 	cv::threshold(image_source, ensemble_niveau, 100, 255, cv::THRESH_BINARY);
-	//cv::Mat ensemble_niveau = image_source;
-
-
-	/// TODO: changer la méthode de détection des contours, celle-ci n'est pas tellement utile malheureusement...
-	/*
-	// Deuxième étape: détection des contours:
-	cv::Mat drawing = cv::Mat::zeros(image_source.size(), CV_8UC3);
-	std::vector<std::vector<cv::Point>> contours;
-	std::vector<cv::Vec4i> hierarchy;
-	cv::findContours(ensemble_niveau, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-	for(int i = 0; i < contours.size(); i++)
-	{
-		cv::Scalar color = cv::Scalar(255,0,0);
-		cv::drawContours(drawing, contours, i, color, 1, cv::LINE_8, hierarchy, 0);
-	}
-	*/
 
 	// Calcul des dérivées
 	cv::Mat gradient_x, gradient_y;
@@ -53,6 +37,9 @@ int main(int argc, char** argv)
 	cv::phase(gradient_x, gradient_y, direction, true); // "true" pour avoir des degrés
 	cv::magnitude(gradient_x, gradient_y, norme);
 
+	cv::Mat contour;
+	cv::threshold(norme, contour, 0.5, 255, cv::THRESH_BINARY);
+
 	// Création de l'image représentant le gradient
 	std::vector<cv::Mat> canaux;
 	canaux.push_back(direction);
@@ -67,7 +54,7 @@ int main(int argc, char** argv)
 	cv::imshow("Gradient X", gradient_x);
 	cv::imshow("Gradient Y", gradient_y);
 	cv::imshow("Gradient", gradient);
-	//cv::imshow( "Contours", drawing);
+	cv::imshow("Contour",contour);
 	
 	// On attend que la touche `q` ait été pressée
 	while(cv::waitKeyEx() != 113);
