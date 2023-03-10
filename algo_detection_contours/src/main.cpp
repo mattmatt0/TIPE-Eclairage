@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
 	// On charge l'image donnée en paramètre (par défaut img.png dans le dossier source) en noir et blanc
-	cv::CommandLineParser parser(argc, argv, "{@image | ../../../img.png | Image sur laquelle on va opérer nos transformations}");
+	cv::CommandLineParser parser(argc, argv, "{@image | ../../../images/toy_example.jpg | Image sur laquelle on va opérer nos transformations}");
 	cv::Mat image_chargee = imread(parser.get<cv::String>( "@image" ), cv::IMREAD_GRAYSCALE);
 
 	// On floute un peu l'image pour réduire le bruit
