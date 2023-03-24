@@ -25,7 +25,7 @@ Mat charge_image_2(int argc, char** argv)
 	
 }
 
-vector<Mat> separe_en_seuils(:Mat image, int nb_seuils)
+vector<Mat> separe_en_seuils(Mat image, int nb_seuils)
 {
 	// Séparation des pixels selon différent seuils
 	int pas = 250/nb_seuils;
