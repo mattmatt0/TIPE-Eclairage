@@ -17,10 +17,19 @@ cv::Mat charge_image(int argc, char** argv)
 	return image_source;
 }
 
-cv::Mat charge_image_2(int argc, char** argv)
+cv::Mat charge_image_hsv(int argc, char** argv)
 {
-	
+	// On charge l'image donnée en paramètre du programme dans l'espace de couleur BGR
+	cv::CommandLineParser parser(argc, argv, "{@image | ../../../../images/toy_example.jpg | Image sur laquelle on va opérer nos transformations}");
+	cv::Mat image_chargee = imread(parser.get<cv::String>( "@image" ), cv::IMREAD_COLOR);
+	// On convertit l'image dans l'espace de couleur HSV
+	cv::Mat image_source;
+	cv::cvtColor(image_chargee, image_source, cv::BGR2HSV);
+	return image_source; 
 }
+
+// Coder fonction pour le calcul de Texton Color Space (TCS)
+// Définir un nouveau type struct pour renvoyer les 3 canaux
 
 std::vector<cv::Mat> separe_en_seuils(cv::Mat image, int nb_seuils)
 {
