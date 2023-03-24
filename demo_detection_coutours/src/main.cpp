@@ -4,33 +4,44 @@
 #include "opencv2/imgproc.hpp"
 #include <iostream>
 
-
-int main(int argc, char** argv)
+cv::Mat charge_image(int argc, char** argv)
 {
 	// On charge l'image donnée en paramètre (par défaut img.png dans le dossier source) en noir et blanc
 	cv::CommandLineParser parser(argc, argv, "{@image | ../../../images/toy_example.jpg | Image sur laquelle on va opérer nos transformations}");
 	cv::Mat image_chargee = imread(parser.get<cv::String>( "@image" ), cv::IMREAD_GRAYSCALE);
-
+	
 	// On floute un peu l'image pour réduire le bruit
 	//GaussianBlur(image_source, image_source, cv::Size(5, 5), 0, 0, cv::BORDER_DEFAULT);
 	cv::Mat image_source;
 	bilateralFilter(image_chargee, image_source, 10, 20, 5);
-	
+	return image_source;
+}
 
-	// Première étape: séparation des pixels selon différent seuils:
-	int const NB_SEUILS = 10;
-	int seuils[NB_SEUILS] = {5,10,20,30,50,70,100,150,200,250};
-	cv::Mat ensembles_X[NB_SEUILS];
-	cv::Mat contours[NB_SEUILS];
-	
+std::vector<cv::Mat> separe_en_seuils(cv::Mat image, int nb_seuils)
+{
+	// Séparation des pixels selon différent seuils
+	int pas = 250/nb_seuils;
+	int seuils[nb_seuils];
 
-	for(int i = 0; i < NB_SEUILS; ++i)
-		cv::threshold(image_source, ensembles_X[i], seuils[i], 255, cv::THRESH_BINARY);
+	std::vector<cv::Mat> ensembles_X;
 
-	
-	// Calcul des contours
-	for(int i = 0; i < NB_SEUILS; ++i)
+	for(int i = 0; i < nb_seuils; ++i)
 	{
+		ensembles_X.push_back(cv::Mat());
+		cv::threshold(image, ensembles_X.at(i), (i+1)*pas, 255, cv::THRESH_BINARY);
+	}
+
+	return ensembles_X;
+}
+
+std::vector<cv::Mat> calcul_contours(cv::Mat image, std::vector<cv::Mat> ensembles_X, int nb_seuils)
+{
+	// Calcul des contours
+	std::vector<cv::Mat> contours;
+	for(int i = 0; i < nb_seuils; ++i)
+	{
+		contours.push_back(cv::Mat());
+
 		// Calcul des dérivées
 		cv::Mat gradient_x, gradient_y;
 		Sobel(ensembles_X[i], gradient_x, CV_32F, 1, 0, 3);
@@ -62,18 +73,22 @@ int main(int argc, char** argv)
 		cv::Mat gradient;
 		cv::merge(canaux,contours[i]);
 	}
+	return contours;
+}
 
+std::vector<cv::Mat> calcul_S_et_O(std::vector<cv::Mat> contours, int nb_seuils)
+{
 	// Calcul de S et O
 	cv::Mat ensemble_S = cv::Mat::zeros(contours[0].size(), CV_32F);
 	cv::Mat ensemble_O = cv::Mat::zeros(contours[0].size(), CV_32F);
-	cv::Mat orientations[NB_SEUILS];
-	cv::Mat appartient_contours[NB_SEUILS];
+	cv::Mat orientations[nb_seuils];
+	cv::Mat appartient_contours[nb_seuils];
 
-	for(int i = 0; i < NB_SEUILS; ++i)
+	for(int i = 0; i < nb_seuils; ++i)
 	{
 		cv::Mat hsv[3]; // hsv[2] -> appartenance d'un pixel à la bordure, hsv[0] -> orientation de la bordure en ce pixel
 		split(contours[i],hsv);
-		ensemble_S += 1.0/NB_SEUILS * hsv[2];
+		ensemble_S += 1.0/nb_seuils * hsv[2];
 		orientations[i] = hsv[0];
 		appartient_contours[i] = hsv[2];
 	}
@@ -87,12 +102,10 @@ int main(int argc, char** argv)
 			std::array<int, 360> nb_occurences;
 			nb_occurences.fill(0);
 			// On compte, pour chaque orientation, le nombre de contours pour lequel il y a cette orientation
-			for(int i = 0; i < NB_SEUILS; ++i)
+			for(int i = 0; i < nb_seuils; ++i)
 			{
 				if(appartient_contours[i].at<float>(x,y) == 1.0)
-				//{
 					nb_occurences[floor(orientations[i].at<float>(x,y))]++;
-		//		}
 			}
 			int orientation_majoritaire = 0;
 			int nb_orientation_max = 0;
@@ -108,12 +121,35 @@ int main(int argc, char** argv)
 			ensemble_O.at<float>(x,y) = (float) orientation_majoritaire;
 		}
 	}
-	std::vector<cv::Mat> canaux_2;
-	canaux_2.push_back(ensemble_O);
-	canaux_2.push_back(cv::Mat(ensemble_O.size(), CV_32F, 1.0));
-	canaux_2.push_back(ensemble_S);
+	std::vector<cv::Mat> canaux;
+	canaux.push_back(ensemble_O);
+	canaux.push_back(cv::Mat(ensemble_O.size(), CV_32F, 1.0));
+	canaux.push_back(ensemble_S);
+	return canaux;
+}
+
+
+int main(int argc, char** argv)
+{	
+	cv::Mat image_source = charge_image(argc, argv);
+
+	// Nombre de seuils pour les lignes de niveaux
+	int const NB_SEUILS = 10;
+
+	// Séparation des pixels répartits dans les nb_seuils seuils.
+	std::vector<cv::Mat> ensembles_X = separe_en_seuils(image_source, NB_SEUILS); 
+
+	// Calcul des contours
+	std::vector<cv::Mat> contours = calcul_contours(image_source, ensembles_X, NB_SEUILS);
+
+	// Calcul des canaux hsv
+	std::vector<cv::Mat> canaux = calcul_S_et_O(contours, NB_SEUILS);
+	cv::Mat ensemble_O = canaux.at(0);
+	cv::Mat ensemble_S = canaux.at(2);
+	
+	// Calcul de l'image de synthèse
 	cv::Mat image_synthese;
-	cv::merge(canaux_2, image_synthese);
+	cv::merge(canaux, image_synthese);
 	cv::cvtColor(image_synthese, image_synthese, cv::COLOR_HSV2BGR);
 
 
@@ -122,6 +158,10 @@ int main(int argc, char** argv)
 	cv::imshow("ensemble O", ensemble_O);
 	cv::imshow("Synthese", image_synthese);
 
+	int const PERIOD = 2;
+	cv::Mat reference_model[PERIOD];
+	
+	
 	
 	// On attend que la touche `q` ait été pressée
 	while(cv::waitKeyEx() != 113);
