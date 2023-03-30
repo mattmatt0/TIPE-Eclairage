@@ -7,6 +7,13 @@
 using namespace cv;
 using namespace std;
 
+struct troisCanaux
+{
+	Mat canal1;
+	Mat canal2;
+	Mat canal3;	
+};
+
 Mat charge_image(int argc, char** argv)
 {
 	// On charge l'image donnée en paramètre (par défaut img.png dans le dossier source) en noir et blanc
@@ -33,6 +40,15 @@ Mat charge_image_hsv(int argc, char** argv)
 
 // Coder fonction pour le calcul de Texton Color Space (TCS)
 // Définir un nouveau type struct pour renvoyer les 3 canaux
+
+struct troisCanaux calcul_nouveaux_canaux (Mat image_hsv)
+{
+	Mat splited[3];
+	split(image_hsv, splited);
+	struct troisCanaux image_hsv_splited = {splited[0], splited[1], splited[2]};
+	return image_hsv_splited;
+}
+
 vector<Mat> separe_en_seuils(Mat image, int nb_seuils)
 {
 	// Séparation des pixels selon différent seuils
