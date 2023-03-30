@@ -41,7 +41,7 @@ Mat charge_image_hsv(int argc, char** argv)
 // Coder fonction pour le calcul de Texton Color Space (TCS)
 // Définir un nouveau type struct pour renvoyer les 3 canaux
 
-struct troisCanaux calcul_nouveaux_canaux (Mat image_hsv)
+struct troisCanaux hsv2SplitedChannels (Mat image_hsv)
 {
 	Mat splited[3];
 	split(image_hsv, splited);
