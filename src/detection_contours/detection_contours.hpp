@@ -49,6 +49,22 @@ struct troisCanaux hsv2SplitedChannels (Mat image_hsv)
 	return image_hsv_splited;
 }
 
+struct troisCanaux calcul_TCS (struct troisCanaux tab_mat)
+{
+	Mat canal1;
+	Mat canal2;
+	for (int i = 0; i < canal1.rows; ++i)
+	{
+		for (int j = 0; j < canal1.cols; ++j)
+		{
+			canal1.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * cos(tab_mat.canal1.at<float>(i,j));
+			canal2.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * sin(tab_mat.canal1.at<float>(i,j));
+		}
+	}
+	struct troisCanaux TCS = {canal1, canal2, tab_mat.canal3};
+	return TCS;
+}
+
 vector<Mat> separe_en_seuils(Mat image, int nb_seuils)
 {
 	// Séparation des pixels selon différent seuils
