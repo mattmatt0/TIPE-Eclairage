@@ -7,7 +7,7 @@
 using namespace cv;
 using namespace std;
 
-struct troisCanaux
+struct TroisCanaux
 {
 	Mat canal1;
 	Mat canal2;
@@ -41,27 +41,31 @@ Mat charge_image_hsv(int argc, char** argv)
 // Coder fonction pour le calcul de Texton Color Space (TCS)
 // Définir un nouveau type struct pour renvoyer les 3 canaux
 
-struct troisCanaux hsv2SplitedChannels (Mat image_hsv)
+struct TroisCanaux hsv2SplitedChannels (Mat image_hsv)
 {
 	Mat splited[3];
 	split(image_hsv, splited);
-	struct troisCanaux image_hsv_splited = {splited[0], splited[1], splited[2]};
+	struct TroisCanaux image_hsv_splited = {splited[0], splited[1], splited[2]};
 	return image_hsv_splited;
 }
 
-struct troisCanaux calcul_TCS (struct troisCanaux tab_mat)
+struct TroisCanaux calcul_TCS (struct TroisCanaux tab_mat)
 {
-	Mat canal1;
-	Mat canal2;
+	Mat canal1 = Mat::zeros(tab_mat.canal1.size(), CV_32F);
+	Mat canal2 = Mat::zeros(tab_mat.canal1.size(), CV_32F);
 	for (int i = 0; i < canal1.rows; ++i)
 	{
 		for (int j = 0; j < canal1.cols; ++j)
 		{
-			canal1.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * cos(tab_mat.canal1.at<float>(i,j));
-			canal2.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * sin(tab_mat.canal1.at<float>(i,j));
+			canal1.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * sin(tab_mat.canal1.at<float>(i,j));
+			canal2.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * cos(tab_mat.canal1.at<float>(i,j));
 		}
+		imshow("feur",canal1);
+		while(waitKeyEx() != 113);
 	}
-	struct troisCanaux TCS = {canal1, canal2, tab_mat.canal3};
+	imshow("feur",canal1);
+	while(waitKeyEx() != 113);
+	struct TroisCanaux TCS = {canal1, canal2, tab_mat.canal3};
 	return TCS;
 }
 
