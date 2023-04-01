@@ -81,8 +81,8 @@ struct TroisCanaux calcul_TCS (struct TroisCanaux tab_mat)
 	{
 		for (int j = 0; j < canal1.cols; ++j)
 		{
-			canal1.at<int>(i,j) = floor(float(tab_mat.canal2.at<int>(i,j)) * sin(tab_mat.canal1.at<int>(i,j)));
-			canal2.at<int>(i,j) = floor(float(tab_mat.canal2.at<int>(i,j)) * cos(tab_mat.canal1.at<int>(i,j)));
+			canal1.at<uint8_t>(i,j) = floor(tab_mat.canal2.at<uint8_t>(i,j) * sin(float(tab_mat.canal1.at<uint8_t>(i,j))/180));
+			canal2.at<uint8_t>(i,j) = floor(tab_mat.canal2.at<uint8_t>(i,j) * cos(float(tab_mat.canal1.at<uint8_t>(i,j))/180));
 		}
 	}
 	struct TroisCanaux TCS = {canal1, canal2, tab_mat.canal3};
