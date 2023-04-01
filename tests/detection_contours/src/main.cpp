@@ -3,20 +3,20 @@
 int main(int argc, char** argv)
 {	
 	Mat image_source = charge_image_hsv(argc, argv);
-	imshow("img_source", image_source);
+	//imshow("img_source", image_source);
 	struct TroisCanaux image_source_splited = hsv2SplitedChannels(image_source);
 	/*imshow("img_hsv_1", image_source_splited.canal1);
 	imshow("img_hsv_2", image_source_splited.canal2);
 	imshow("img_hsv_3", image_source_splited.canal3);*/
 	struct TroisCanaux TCS_img = calcul_TCS(image_source_splited);	
 	imshow("img1", TCS_img.canal1);
-	imshow("img2", TCS_img.canal2);
-	imshow("img3", TCS_img.canal3);
+	//imshow("img2", TCS_img.canal2);
+	//imshow("img3", TCS_img.canal3);
 	
 
 	// Nombre de seuils pour les lignes de niveaux
 	int const NB_SEUILS = 10;
-/*
+
 	// Séparation des pixels répartits dans les nb_seuils seuils.
 	vector<Mat> ensembles_X1 = separe_en_seuils(TCS_img.canal1, NB_SEUILS);
 	vector<Mat> ensembles_X2 = separe_en_seuils(TCS_img.canal2, NB_SEUILS);
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
 	int const PERIOD = 9;
 	Mat reference_model[PERIOD];
-	*/
+	
 	
 	// On attend que la touche `q` ait été pressée
 	while(waitKeyEx() != 113);

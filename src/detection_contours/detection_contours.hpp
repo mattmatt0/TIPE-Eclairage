@@ -76,7 +76,6 @@ struct TroisCanaux calcul_TCS (struct TroisCanaux tab_mat)
 {
 	Mat canal1 = Mat::zeros(tab_mat.canal2.size(), CV_8UC1);
 	Mat canal2 = Mat::zeros(tab_mat.canal2.size(), CV_8UC1);
-	cout << type2str(tab_mat.canal2.type()) << endl;
 	for (int i = 0; i < canal1.rows; ++i)
 	{
 		for (int j = 0; j < canal1.cols; ++j)
