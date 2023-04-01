@@ -7,6 +7,29 @@
 using namespace cv;
 using namespace std;
 
+string type2str(int type) {
+  string r;
+
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
+}
+
 struct TroisCanaux
 {
 	Mat canal1;
@@ -51,20 +74,17 @@ struct TroisCanaux hsv2SplitedChannels (Mat image_hsv)
 
 struct TroisCanaux calcul_TCS (struct TroisCanaux tab_mat)
 {
-	Mat canal1 = Mat::zeros(tab_mat.canal1.size(), CV_32F);
-	Mat canal2 = Mat::zeros(tab_mat.canal1.size(), CV_32F);
+	Mat canal1 = Mat::zeros(tab_mat.canal2.size(), CV_8UC1);
+	Mat canal2 = Mat::zeros(tab_mat.canal2.size(), CV_8UC1);
+	cout << type2str(tab_mat.canal2.type()) << endl;
 	for (int i = 0; i < canal1.rows; ++i)
 	{
 		for (int j = 0; j < canal1.cols; ++j)
 		{
-			canal1.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * sin(tab_mat.canal1.at<float>(i,j));
-			canal2.at<float>(i,j) = tab_mat.canal2.at<float>(i,j) * cos(tab_mat.canal1.at<float>(i,j));
+			canal1.at<int>(i,j) = floor(float(tab_mat.canal2.at<int>(i,j)) * sin(tab_mat.canal1.at<int>(i,j)));
+			canal2.at<int>(i,j) = floor(float(tab_mat.canal2.at<int>(i,j)) * cos(tab_mat.canal1.at<int>(i,j)));
 		}
-		imshow("feur",canal1);
-		while(waitKeyEx() != 113);
 	}
-	imshow("feur",canal1);
-	while(waitKeyEx() != 113);
 	struct TroisCanaux TCS = {canal1, canal2, tab_mat.canal3};
 	return TCS;
 }
