@@ -43,11 +43,25 @@ int main(int argc, char** argv)
 	merge(canaux1, image_synthese1);
 	cvtColor(image_synthese1, image_synthese1, COLOR_HSV2BGR);
 
+	Mat image_synthese2;
+	merge(canaux2, image_synthese2);
+	cvtColor(image_synthese2, image_synthese2, COLOR_HSV2BGR);
+
+	Mat image_synthese3;
+	merge(canaux3, image_synthese3);
+	cvtColor(image_synthese3, image_synthese3, COLOR_HSV2BGR);
+
 
 	// On affiche les deux ensembles
-	imshow("ensemble S", ensemble_S1);
-	imshow("ensemble O", ensemble_O1);
-	imshow("Synthese", image_synthese1);
+	imshow("ensemble S1", ensemble_S1);
+	imshow("ensemble O1", ensemble_O1);
+	imshow("Synthese1", image_synthese1);
+	imshow("ensemble S2", ensemble_S2);
+	imshow("ensemble O2", ensemble_O2);
+	imshow("Synthese2", image_synthese2);
+	imshow("ensemble S3", ensemble_S3);
+	imshow("ensemble O3", ensemble_O3);
+	imshow("Synthese3", image_synthese3);
 
 	int const PERIOD = 9;
 	Mat reference_model[PERIOD];
