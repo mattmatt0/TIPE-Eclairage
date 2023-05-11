@@ -201,13 +201,13 @@ vector<Mat> calcul_S_et_O(vector<Mat> contours, int nb_seuils)
 	return canaux;
 }
 
-array<Mat, 3> synthese_S_O_CTS(vector<Mat>[3] canaux)
+vector<Mat> synthese_S_O_CTS(vector<vector<Mat>> canaux)
 {
 	// Calcule S et O à partir des différentes valeurs de S et O calculées dans chacun des 3 canaux passés en paramètres.
-	Mat ensemble_S = Mat::zeros(canaux[0].at(0).size(), CV_32F);
-	Mat ensemble_O = Mat::zeros(canaux[0].at(0).size(), CV_32F);
-	int taille_x = contours[0].size().height;
-	int taille_y = contours[0].size().width;
+	Mat ensemble_S = Mat::zeros(canaux.at(0).at(0).size(), CV_32F);
+	Mat ensemble_O = Mat::zeros(canaux.at(0).at(0).size(), CV_32F);
+	int taille_x = canaux.at(0).at(0).size().height;
+	int taille_y = canaux.at(0).at(0).size().width;
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
@@ -216,16 +216,20 @@ array<Mat, 3> synthese_S_O_CTS(vector<Mat>[3] canaux)
 			float max = 0;
 			for(int i = 0; i < 3; ++i)
 			{
-				if(canaux[i].at(2).at<float>(x,y) >= max)
+				if(canaux.at(i).at(1).at<float>(x,y) >= max)
 				{
 					id_max = i;
-					max = canaux[i].at(2).at<float>(x,y);
+					max = canaux.at(i).at(1).at<float>(x,y);
 				}
 			}
 			ensemble_S.at<float>(x,y) = max;
 			ensemble_O.at<float>(x,y) = canaux[id_max].at(0).at<float>(x,y);
 		}
 	}
-	return {ensemble_S, ensemble_O};
+	vector<Mat> res;
+	res.push_back(ensemble_O);
+	res.push_back(Mat(ensemble_O.size(), CV_32F, 1.0));
+	res.push_back(ensemble_S);
+	return res;
 
 }

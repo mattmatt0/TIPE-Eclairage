@@ -37,8 +37,28 @@ int main(int argc, char** argv)
 	Mat ensemble_S2 = canaux2.at(2);
 	Mat ensemble_O3 = canaux3.at(0);
 	Mat ensemble_S3 = canaux3.at(2);
+
+	vector<Mat> synth1;
+	vector<Mat> synth2;
+	vector<Mat> synth3;
+
+	synth1.push_back(ensemble_O1);
+	synth1.push_back(ensemble_S1);
+	synth2.push_back(ensemble_O2);
+	synth2.push_back(ensemble_S2);
+	synth3.push_back(ensemble_O3);
+	synth3.push_back(ensemble_S3);
+	vector<vector<Mat>> datas;
+	datas.push_back(synth1);
+	datas.push_back(synth2);
+	datas.push_back(synth3);
+
+	
 	
 	// Calcul de l'image de synthèse
+	vector<Mat> mfs_cts = synthese_S_O_CTS(datas);
+
+	/*
 	Mat image_synthese1;
 	merge(canaux1, image_synthese1);
 	cvtColor(image_synthese1, image_synthese1, COLOR_HSV2BGR);
@@ -65,7 +85,13 @@ int main(int argc, char** argv)
 
 	int const PERIOD = 9;
 	Mat reference_model[PERIOD];
-	
+	*/
+
+	Mat img_mfs_cts;
+	merge(mfs_cts, img_mfs_cts);
+	cvtColor(img_mfs_cts, img_mfs_cts, COLOR_HSV2BGR);
+
+	imshow("MFS CTS", img_mfs_cts);
 	
 	// On attend que la touche `q` ait été pressée
 	while(waitKeyEx() != 113);
