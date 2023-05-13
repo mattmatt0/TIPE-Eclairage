@@ -1,6 +1,6 @@
 #include "detection_contours/detection_contours.hpp"
 
-vector<Mat> charge_images(string repertoire, string extension)
+vector<Mat> charge_repertoire_images(string repertoire, string extension)
 {
 	// Charge toutes les images dans `repertoire` avec l'extension `extension`
 	// `repertoire` ne doit pas comporter de "/" à la fin.

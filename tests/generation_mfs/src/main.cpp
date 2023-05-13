@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {	
-	vector<Mat> images = charge_images("../../../../images/test_mfs", "png");
+	vector<Mat> images = charge_repertoire_images("../../../../images/test_mfs", "png");
 	vector<Mat> ensembles_O;
 	int const NB_SEUILS = 10;
 	int const NB_ORIENTATIONS = 90;
