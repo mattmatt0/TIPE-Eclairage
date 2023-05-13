@@ -23,3 +23,6 @@ _deps
 
 ### Répertoires build ###
 tests/*/build
+
+### Images de tests ###
+images/test_mfs
