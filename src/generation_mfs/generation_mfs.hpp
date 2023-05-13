@@ -19,7 +19,6 @@ Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 			res.at<uint8_t>(x,y) = floor(floor(ensembles_O.at(t).at<float>(x,y) / 360 * nb_orientations) * seuil);
 		}
 	}
-	return res;
 	
 	cout << "Vérification de la stabilité..." << endl;
 	// Puis on vérifie la stabilité des orientations
@@ -27,13 +26,12 @@ Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			cout << "En x =" << x << " et y = " << y << endl;
 			for(int i = t+1; i < t+T; ++i)
 			{
 				if(res.at<int>(x,y) > ensembles_O.at(i).at<float>(x,y) + seuil ||
 					res.at<int>(x,y) < ensembles_O.at(i).at<float>(x,y) - seuil)
 				{
-					res.at<int>(x,y) = 0;
+					res.at<uint8_t>(x,y) = 0;
 					break;
 				}
 			}
