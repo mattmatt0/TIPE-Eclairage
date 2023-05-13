@@ -80,17 +80,19 @@ Mat cree_image_orientations(Mat orientations)
 {
 	// Pour afficher des orientations uniquement, avec 0 = absence d'orientation.
 	// Les orientations sont comprises entre 0 et 180, et doivent donc être stockées sur 8 bits
+
 	Mat intensites = Mat(orientations.size(), CV_8UC1);
 	Mat saturations = Mat(orientations.size(), CV_8UC1);
-	intensites = 1;
-	saturations = 1;
-	for(int x = 0; x < orientations.size().width; ++x)
+	for(int x = 0; x < orientations.size().height; ++x)
 	{
-		for(int y = 0; y < orientations.size().height; ++y)
+		for(int y = 0; y < orientations.size().width; ++y)
 		{
 			if(orientations.at<uint8_t>(x,y) == 0) intensites.at<uint8_t>(x,y) = 0;
+			else intensites.at<uint8_t>(x,y) = 255;
+			saturations.at<uint8_t>(x,y) = 255;
 		}
 	}
+	//imshow("intensites",intensites);
 	vector<Mat> canaux;
 	canaux.push_back(orientations);
 	canaux.push_back(saturations);

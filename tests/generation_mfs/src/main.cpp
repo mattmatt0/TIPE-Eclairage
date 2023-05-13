@@ -19,9 +19,10 @@ int main(int argc, char** argv)
 	{
 
 		cout << "Calcul de R entre t = " << t << "et t = " << t+T << endl;
-		Mat res = calcule_R(ensembles_O, t, T, NB_ORIENTATIONS);
+		Mat R = calcule_R(ensembles_O, t, T, NB_ORIENTATIONS);
 		cout << "Tout va bien :D" << endl;
-		imshow("R", res);
+		Mat disp_img = cree_image_orientations(R);
+		imshow("R", disp_img);
 		imshow("O", ensembles_O.at(t));
 		while(waitKeyEx() != 113);
 	}
