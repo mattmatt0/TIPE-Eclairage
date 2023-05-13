@@ -73,6 +73,7 @@ Mat charge_image_hsv(int argc, char** argv)
 	// On convertit l'image dans l'espace de couleur HSV
 	Mat image_source;
 	cvtColor(image_chargee, image_source, COLOR_BGR2HSV);
+	bilateralFilter(image_chargee, image_source, 10, 20, 5);
 	return image_source; 
 }
 
