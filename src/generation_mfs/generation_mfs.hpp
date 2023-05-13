@@ -17,8 +17,9 @@ vector<Mat> charge_repertoire_images(string repertoire, string extension)
 	{
 		cout << "Lecture de " + emplacements[i] << endl;
 		image_courante = imread(emplacements[i], IMREAD_GRAYSCALE);
-		bilateralFilter(image_courante, image_courante, 10, 20, 5);
-    	images.push_back(image_courante);
+		Mat img_filtree;
+		bilateralFilter(image_courante, img_filtree, 10, 20, 5);
+    	images.push_back(img_filtree);
 	}
 	
 	return images;
@@ -35,19 +36,23 @@ Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 	// Création de la première image à laquelle on va comparer les images suivantes.
 	// On va arrondir les valeurs des orientations comme il faut, dans un demi-tour
 	Mat res = Mat(ensembles_O.at(0).size(), CV_8UC1);
+	cout << "Conversion de l'image en valeurs entières..." << endl;
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			res.at<int>(x,y) = floor(floor(ensembles_O.at(0).at<float>(x,y) / 360 * nb_orientations) * seuil);
+			res.at<uint8_t>(x,y) = floor(floor(ensembles_O.at(t).at<float>(x,y) / 360 * nb_orientations) * seuil);
 		}
 	}
-
+	return res;
+	
+	cout << "Vérification de la stabilité..." << endl;
 	// Puis on vérifie la stabilité des orientations
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
+			cout << "En x =" << x << " et y = " << y << endl;
 			for(int i = t+1; i < t+T; ++i)
 			{
 				if(res.at<int>(x,y) > ensembles_O.at(i).at<float>(x,y) + seuil ||
@@ -59,6 +64,7 @@ Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 			}
 		}
 	}
+	cout << "Terminé !" << endl;
 	return res;
 }
 
