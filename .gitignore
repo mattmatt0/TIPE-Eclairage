@@ -25,4 +25,4 @@ _deps
 tests/*/build
 
 ### Images de tests ###
-images/test_mfs
+images
