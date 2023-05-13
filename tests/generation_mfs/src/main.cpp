@@ -18,12 +18,11 @@ int main(int argc, char** argv)
 	for(int t = 0; t + T < ensembles_O.size(); ++t)
 	{
 
-		cout << "Calcul de R entre t = " << t << "et t = " << t+T << endl;
-		Mat R = calcule_R(ensembles_O, t, T, NB_ORIENTATIONS);
-		cout << "Tout va bien :D" << endl;
-		Mat disp_img = cree_image_orientations(R);
-		imshow("R", disp_img);
-		imshow("O", ensembles_O.at(t));
+		cout << "Calcul de D entre t = " << t << " et t = " << t+T << endl;
+		Mat D = calcule_D(ensembles_O, t, T, NB_ORIENTATIONS);
+		//Mat disp_img = cree_image_orientations(R);
+		imshow("D", D);
+		//imshow("O", ensembles_O.at(t));
 		while(waitKeyEx() != 113);
 	}
 	return 0;
