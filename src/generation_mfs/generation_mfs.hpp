@@ -1,30 +1,5 @@
 #include "detection_contours/detection_contours.hpp"
 
-vector<Mat> charge_repertoire_images(string repertoire, string extension)
-{
-	// Charge toutes les images dans `repertoire` avec l'extension `extension`
-	// `repertoire` ne doit pas comporter de "/" à la fin.
-	// `extension` ne doit pas comporter de "." au début
-	vector<cv::String> emplacements;
-	cout << "Recherche d'images dans " << repertoire + "/*." + extension << endl;
-	glob(repertoire + "/*." + extension, emplacements, false);
-
-	vector<Mat> images;
-	size_t nb_images = emplacements.size(); 
-	Mat image_courante;
-
-	for(size_t i = 0; i < nb_images; ++i)
-	{
-		cout << "Lecture de " + emplacements[i] << endl;
-		image_courante = imread(emplacements[i], IMREAD_GRAYSCALE);
-		Mat img_filtree;
-		bilateralFilter(image_courante, img_filtree, 10, 20, 5);
-    	images.push_back(img_filtree);
-	}
-	
-	return images;
-}
-
 Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 {
 	// Calcule R_t à partir du vecteur des valeurs de O à chaque instant t.

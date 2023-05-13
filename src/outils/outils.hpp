@@ -88,7 +88,7 @@ Mat cree_image_orientations(Mat orientations)
 	{
 		for(int y = 0; y < orientations.size().height; ++y)
 		{
-			if(orientations.at<uint8_t>(x,y) == 0) intensites<uint8_t>(x,y) = 0;
+			if(orientations.at<uint8_t>(x,y) == 0) intensites.at<uint8_t>(x,y) = 0;
 		}
 	}
 	vector<Mat> canaux;
