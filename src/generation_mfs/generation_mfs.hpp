@@ -14,7 +14,7 @@ vector<Mat> charge_images(string repertoire, string extension)
 
 	for(size_t i = 0; i < nb_images; ++i)
 	{
-		image_courante = imread(emplacements[i]);
+		image_courante = imread(emplacements[i], IMREAD_GRAYSCALE);
 		bilateralFilter(image_courante, image_courante, 10, 20, 5);
     	images.push_back(image_courante);
 	}

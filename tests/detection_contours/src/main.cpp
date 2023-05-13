@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	// Nombre de seuils pour les lignes de niveaux
 	int const NB_SEUILS = 10;
 
-	// Séparation des pixels répartits dans les nb_seuils seuils.
+	// Séparation des pixels répartis dans les NB_SEUILS seuils.
 	vector<Mat> ensembles_X1 = separe_en_seuils(TCS_img.canal1, NB_SEUILS);
 	vector<Mat> ensembles_X2 = separe_en_seuils(TCS_img.canal2, NB_SEUILS);
 	vector<Mat> ensembles_X3 = separe_en_seuils(TCS_img.canal3, NB_SEUILS); 
