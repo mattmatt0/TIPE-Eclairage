@@ -23,6 +23,7 @@ _deps
 
 ### Répertoires build ###
 tests/*/build
+apps/*/build
 
 ### Images de tests ###
 images
