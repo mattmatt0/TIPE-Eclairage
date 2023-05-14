@@ -1,17 +1,25 @@
 #include "generation_mfs/generation_mfs.hpp"
+#include "outils/constantes.hpp"
 
 int main(int argc, char** argv)
 {	
-	CommandLineParser parser(argc, argv, "{source_dir | ../../../../images/test_mfs | Dossier contenant la séquence à analyser}{extension | png | Extension des images à rechercher}{nb_images | -1 | Nombre d'images à étudier}");
+	CommandLineParser parser(argc, argv, params_generiques+params_analyse+params_images);
+	if(parser.has("help"))
+	{
+		parser.printMessage();
+		return 0;
+	}
 
-	int nb_images = parser.get<int>("nb_images");
-	vector<Mat> images = charge_repertoire_images(parser.get<String>("source_dir"), parser.get<String>("extension"), nb_images);
+	int const NB_SEUILS = parser.get<int>("nb-seuils");
+	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
+	int const T = parser.get<int>("tau");
+	int nb_images = parser.get<int>("nb-img");
+	string rep_source = parser.get<String>("rep-source");
+	string extension = parser.get<String>("extension");
+
+	vector<Mat> images = charge_repertoire_images(rep_source, extension, nb_images);
 	vector<Mat> ensembles_O;
-	int const NB_SEUILS = 10;
-	int const NB_ORIENTATIONS = 10;
-	int const T = 2;
 
-	cout << "Nombre d'images: " << nb_images << endl;
 	nb_images = images.size();
 	for(int i = 0; i < nb_images; ++i)
 	{
@@ -21,7 +29,8 @@ int main(int argc, char** argv)
 		vector<Mat> S_et_O = calcul_S_et_O(contours, NB_SEUILS);
 		ensembles_O.push_back(S_et_O.at(0));
 	}
-	int n;
+
+	int touche;
 	for(int t = 0; t + T < ensembles_O.size(); ++t)
 	{
 
@@ -32,10 +41,10 @@ int main(int argc, char** argv)
 		ensembles_O.at(t+T).convertTo(O_entier, CV_8UC1);
 		Mat disp_imgO = cree_image_orientations(O_entier);
 		imshow("O", disp_imgO);
-		while(n = waitKeyEx())
+		while(touche = waitKeyEx())
 		{
-			if(n == 113) {t = ensembles_O.size(); break;}
-			else if (n == 110) break;
+			if(touche == TOUCHE_Q) {t = ensembles_O.size(); break;}
+			else if (touche == TOUCHE_N) break;
 		};
 	}
 	return 0;
