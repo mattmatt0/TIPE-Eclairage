@@ -57,7 +57,7 @@ Mat charge_image(int argc, char** argv)
 {
 	// On charge l'image donnée en paramètre (par défaut img.png dans le dossier source) en noir et blanc
 	CommandLineParser parser(argc, argv, "{@image | ../../../../images/lenna.jpg | Image sur laquelle on va opérer nos transformations}");
-	Mat image_chargee = imread(parser.get<String>( "@image" ), IMREAD_GRAYSCALE);
+	Mat image_chargee = imread(parser.get<String>("@image"), IMREAD_GRAYSCALE);
 	// On floute un peu l'image pour réduire le bruit
 	//GaussianBlur(image_source, image_source, Size(5, 5), 0, 0, BORDER_DEFAULT);
 	Mat image_source;

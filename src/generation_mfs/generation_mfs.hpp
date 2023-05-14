@@ -59,7 +59,7 @@ Mat calcule_D(vector<Mat> images, int t, int T, int nb_orientations)
 		{
 			if(R.at<uint8_t>(x,y) == 255 || R.at<uint8_t>(x,y) > images.at(t+T).at<float>(x,y) + seuil || R.at<uint8_t>(x,y) < images.at(t+T).at<float>(x,y) - seuil)
 			{
-				res.at<uint8_t>(x,y) = 255;
+				res.at<uint8_t>(x,y) = floor(images.at(t+T).at<float>(x,y));
 			}
 		}
 	}
