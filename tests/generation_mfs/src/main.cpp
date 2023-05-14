@@ -3,14 +3,16 @@
 int main(int argc, char** argv)
 {	
 	CommandLineParser parser(argc, argv, "{source_dir | ../../../../images/test_mfs | Dossier contenant la séquence à analyser}{extension | png | Extension des images à rechercher}{nb_images | -1 | Nombre d'images à étudier}");
-	vector<Mat> images = charge_repertoire_images(parser.get<String>("source_dir"), parser.get<String>("extension"));
+
+	int nb_images = parser.get<int>("nb_images");
+	vector<Mat> images = charge_repertoire_images(parser.get<String>("source_dir"), parser.get<String>("extension"), nb_images);
 	vector<Mat> ensembles_O;
 	int const NB_SEUILS = 10;
 	int const NB_ORIENTATIONS = 10;
 	int const T = 2;
-	int nb_images = parser.get<int>("nb_images");
+
 	cout << "Nombre d'images: " << nb_images << endl;
-	nb_images = (nb_images == -1) ? images.size() : nb_images;
+	nb_images = images.size();
 	for(int i = 0; i < nb_images; ++i)
 	{
 		cout << "Traitement de l'image n° " << i+1 << "/" << nb_images << endl;
