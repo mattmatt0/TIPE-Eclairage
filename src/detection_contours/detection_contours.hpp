@@ -116,10 +116,11 @@ array<Mat, 3> calcul_TCS (array<Mat, 3> tab_mat)
 
 
 
-template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
+template <int n> array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
 {
 	// Calcul des contours
 	array<Mat, n> contours;
+	array<Mat, n> orientation;
 	Size taille = ensemblesX.at(0).size();
 	uint16_t tailleX = taille.width;
 	uint16_t tailleY = taille.height;
@@ -143,14 +144,15 @@ template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
 				contour.at<uint8_t>(y,x) = table_normes.at(pos);
 			}
 		}
-		// Ajout de l'orientation dans une matrice à trois canaux 
-		// (le 1er représentant l'orientation, le 2e valant 1.0 tout le temps 
-		//     et le 3e l'appartenance à un contour)
-		array<Mat, 3> canaux = {orientation, Mat(direction.size(), CV_8UC1, 255), contour};
-		merge(canaux,contours[i]);
+		orientations.at(i) = orientation;
+		contours.at(i) = contour;
+	}
+	return {contours, orientations};
 }
-	return contours;
-}
+
+
+
+
 
 template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> appartient_contours, array<Mat, nb_seuils> orientations, int nb_orientations)
 {
@@ -220,4 +222,26 @@ array<Mat, 2> synthese_S_O_CTS(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 	}
 	array<Mat, 2> res = {ensemble_O, ensemble_S};
 	return res;
+}
+
+array<Mat, 2> calcule_OS_NB(Mat source, int nb_seuils)
+{
+	array<Mat, nb_seuils> ensembles_X = separe_en_seuils<nb_seuils>(source);
+	array<array<Mat, nb_seuils>, 2> contours = calcul_contours<nb_seuils>(ensembles_X);
+	return calcul_S_et_O(contours.at(0), contours.at(1));
+}
+
+array<Mat, 2> calcule_OS_CTS(Mat source, int nb_seuils)
+{
+	array<Mat, 3> canaux = separe_hsv(source);
+	array<Mat, 3> ensembles_O;
+	array<Mat, 3> ensembles_S;
+	array<Mat, 2> ensemble_SO;
+	for(int i = 0; i < 3; ++i)
+	{
+		ensemble_SO = calcule_OS_NB(canaux.at(i), nb_seuils);
+		ensembles_S.at(i) = ensemble_SO.at(0);
+		ensembles_O.at(i) = ensemble_SO.at(1);
+	}
+	return synthese_S_O_CTS(ensembles_S, ensembles_O);
 }
