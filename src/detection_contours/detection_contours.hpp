@@ -152,30 +152,20 @@ template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
 	return contours;
 }
 
-template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contours, int nb_orientations)
+template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> appartient_contours, array<Mat, nb_seuils> orientations, int nb_orientations)
 {
+	Size taille = contours.at(0).size();
+	int taille_x = taille.height;
+	int taille_y = taille.width;
 	// Calcul de S et O
-	Mat ensemble_S = Mat::zeros(contours.at(0).size(), CV_8UC1);
-	Mat ensemble_O = Mat::zeros(contours.at(0).size(), CV_8UC1);
-	std::array<Mat, nb_seuils> orientations;
-	std::array<Mat, nb_seuils> appartient_contours;
-
-	for(int i = 0; i < nb_seuils; ++i)
-	{
-		array<Mat, 3> hsv; // hsv[2] -> appartenance d'un pixel à la bordure, hsv[0] -> orientation de la bordure en ce pixel
-		split(contours.at(i),hsv);
-		ensemble_S += 1.0/nb_seuils * hsv.at(2);
-		orientations.at(i) = hsv.at(0);
-		appartient_contours.at(i) = hsv.at(2);
-	}
-	int taille_x = contours.at(0).size().height;
-	int taille_y = contours.at(0).size().width;
+	Mat ensemble_S = Mat::zeros(taille, CV_8UC1);
+	Mat ensemble_O = Mat::zeros(taille, CV_8UC1);
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
 			// On calcule l'orientation majoritaire
-			array<int, nb_orientations> nb_occurences;
+			array<uint16_t, nb_orientations> nb_occurences;
 			nb_occurences.fill(0);
 			// On compte, pour chaque orientation, le nombre de contours pour lequel il y a cette orientation
 			for(int i = 0; i < nb_seuils; ++i)
