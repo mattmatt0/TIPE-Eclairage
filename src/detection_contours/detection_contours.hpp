@@ -42,8 +42,8 @@ void _calcule_orientations(uint8_t nb_orientations)
 			if(dx == 0 && dy == 0)
 				orientation = 0;
 			else
-				orientation = floor((atan2(dy,dx)/(2*PI) + 0.5) * nb_orientations);
-			table_orientations.at((dx+48)*49 + dy+48) = orientation;
+				orientation = floor((atan2(dy,dx)/(2*PI) + 0.5) * float(nb_orientations));
+			table_orientations.at((dy+48)*97 + dx+48) = orientation;
 		}
 	}
 }
@@ -56,8 +56,8 @@ void _calcule_normes()
 	{
 		for(int dy = -48; dy <= 48; ++dy)
 		{
-			val = (dx*dx + dy*dy) > 0 ? 1 : 0;
-			table_normes.at((dx+48)*97 + dy+48) = val;
+			val = (dx*dx + dy*dy) > 500 ? 1 : 0;
+			table_normes.at((dy+48)*97 + dx+48) = val;
 		}
 	}
 }
@@ -131,13 +131,22 @@ array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
 		{
 			for(int y = 0; y < tailleY; ++y)
 			{
-				pos = (gradient_x.at<int16_t>(y,x)+48)*97 + gradient_y.at<int16_t>(y,x)+48;
+				pos = (gradient_y.at<int16_t>(y,x)+48)*97 + gradient_x.at<int16_t>(y,x)+48;
 				orientation.at<uint8_t>(y,x) = table_orientations.at(pos);
 				contour.at<uint8_t>(y,x) = table_normes.at(pos);
 			}
 		}
 		orientations.at(i) = orientation;
 		contours.at(i) = contour;
+		/*imshow("ensemble X", ensembles_X.at(i)*255);
+		imshow("Contour", contour*255);
+		Mat disp_imgf;
+		orientation.convertTo(disp_imgf, CV_16FC1);
+		disp_imgf *= 256.0/200;
+		Mat disp_img;
+		disp_imgf.convertTo(disp_img, CV_8UC1);
+		imshow("Orientation", disp_img);
+		while(waitKeyEx() != 113);*/
 	}
 	return {contours, orientations};
 }
@@ -150,8 +159,8 @@ template<int nb_seuils> array<Mat, 2>
 calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations, int nb_orientations)
 {
 	Size taille = contours.at(0).size();
-	int taille_x = taille.height;
-	int taille_y = taille.width;
+	int taille_x = taille.width;
+	int taille_y = taille.height;
 	// Calcul de S et O
 	Mat ensemble_S = Mat::zeros(taille, CV_8UC1);
 	Mat ensemble_O = Mat::zeros(taille, CV_8UC1);
@@ -166,10 +175,10 @@ calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations
 			// On compte, pour chaque orientation, le nombre de contours pour lequel il y a cette orientation
 			for(int i = 0; i < nb_seuils; ++i)
 			{
-				if(contours.at(i).template at<uint8_t>(x,y) == 1)
+				if(contours.at(i).template at<uint8_t>(y,x) == 1)
 				{
-					ensemble_S.at<uint8_t>(x,y)++;
-					nb_occurrences[orientations.at(i).template at<uint8_t>(x,y)]++;
+					ensemble_S.at<uint8_t>(y,x)++;
+					nb_occurrences[orientations.at(i).template at<uint8_t>(y,x)]++;
 				}
 			}
 			int orientation_majoritaire = 0;
@@ -183,7 +192,7 @@ calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations
 				}
 			}
 			// On l'ajoute dans l'ensemble O
-			ensemble_O.at<uint8_t>(x,y) = orientation_majoritaire;
+			ensemble_O.at<uint8_t>(y,x) = orientation_majoritaire;
 		}
 	}
 	free(nb_occurrences);
@@ -223,7 +232,7 @@ array<Mat, 2> synthese_S_O_CTS(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 }
 
 template <int nb_seuils> 
-array<Mat, 2> calcule_OS_NB(Mat source, int nb_orientations)
+array<Mat, 2> calcule_SO_NB(Mat source, int nb_orientations)
 {
 	array<Mat, nb_seuils> ensembles_X = separe_en_seuils<nb_seuils>(source);
 	array<array<Mat, nb_seuils>, 2> contours = calcul_contours<nb_seuils>(ensembles_X);
@@ -231,7 +240,7 @@ array<Mat, 2> calcule_OS_NB(Mat source, int nb_orientations)
 }
 
 template <int nb_seuils> 
-array<Mat, 2> calcule_OS_CTS(Mat source, int nb_orientations)
+array<Mat, 2> calcule_SO_CTS(Mat source, int nb_orientations)
 {
 	array<Mat, 3> canaux = separe_hsv(source);
 	array<Mat, 3> ensembles_O;
@@ -239,7 +248,7 @@ array<Mat, 2> calcule_OS_CTS(Mat source, int nb_orientations)
 	array<Mat, 2> ensemble_SO;
 	for(int i = 0; i < 3; ++i)
 	{
-		ensemble_SO = calcule_OS_NB<nb_seuils>(canaux.at(i), nb_orientations);
+		ensemble_SO = calcule_SO_NB<nb_seuils>(canaux.at(i), nb_orientations);
 		ensembles_S.at(i) = ensemble_SO.at(0);
 		ensembles_O.at(i) = ensemble_SO.at(1);
 	}
