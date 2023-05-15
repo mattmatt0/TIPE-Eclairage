@@ -14,13 +14,13 @@ int main(int argc, char** argv)
 
 	// Nombre de seuils pour les lignes de niveaux
 	int const NB_SEUILS = 10;
-	int const NB_ORIENTATIONS = 20;
+	int const NB_ORIENTATIONS = 10;
 
 
 	_calcule_orientations(NB_ORIENTATIONS);
 	_calcule_normes();
 	array<Mat, 2> OS = calcule_OS_NB<NB_SEUILS>(image_source, NB_ORIENTATIONS);
-	imshow("", cree_image_orientations(MFS));
+	imshow("Resultat", cree_image_orientation_amplitude(OS.at(0), OS.at(1), NB_SEUILS, NB_ORIENTATIONS));
 
 	while(waitKeyEx() != 113);
 	return 0;

@@ -103,3 +103,18 @@ Mat cree_image_orientations(Mat orientations)
 	cvtColor(res, res, COLOR_HSV2BGR);
 	return res;
 }
+
+Mat cree_image_orientation_amplitude(Mat orientation, Mat amplitude, int nb_seuils, int nb_orientations)
+{
+	Mat orientation_f, amplitude_f;
+	orientation.convertTo(orientation_f, CV_16FC1);
+	amplitude.convertTo(amplitude_f, CV_16FC1);
+	orientation_f *= 256.0/nb_orientations;
+	amplitude_f *= 256.0/nb_seuils;
+	orientation_f.convertTo(orientation, CV_8UC1);
+	amplitude_f.convertTo(amplitude, CV_8UC1);
+	Mat res;
+	merge(array<Mat, 3>({orientation, Mat(orientation.size(), CV_8UC1, 255), amplitude}), res);
+	cvtColor(res, res, COLOR_HSV2BGR);
+	return res;
+}
