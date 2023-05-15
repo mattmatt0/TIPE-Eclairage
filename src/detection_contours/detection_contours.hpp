@@ -56,7 +56,7 @@ void _calcule_normes(uint8_t nb_seuils)
 	{
 		for(int dy = -18; dy <= 18; ++dy)
 		{
-			val = (dx*dx + dy*dy) > 2 ? 255 : 0;
+			val = (dx*dx + dy*dy) > 2 ? 1 : 0;
 			table_normes.at((dx+18)*37 + (dy*18)) = val;
 		}
 	}
@@ -152,7 +152,7 @@ template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
 	return contours;
 }
 
-template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contours)
+template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contours, int nb_orientations)
 {
 	// Calcul de S et O
 	Mat ensemble_S = Mat::zeros(contours.at(0).size(), CV_8UC1);
@@ -175,17 +175,17 @@ template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contou
 		for(int y = 0; y < taille_y; ++y)
 		{
 			// On calcule l'orientation majoritaire
-			array<int, nb_seuils> nb_occurences;
+			array<int, nb_orientations> nb_occurences;
 			nb_occurences.fill(0);
 			// On compte, pour chaque orientation, le nombre de contours pour lequel il y a cette orientation
 			for(int i = 0; i < nb_seuils; ++i)
 			{
-				if(appartient_contours.at(i).template at<float>(x,y) == 1.0)
-					nb_occurences[floor(orientations.at(i).template at<float>(x,y))]++;
+				if(appartient_contours.at(i).template at<uint8_t>(x,y) == 1)
+					nb_occurences[orientations.at(i).template at<uint8_t>(x,y)]++;
 			}
 			int orientation_majoritaire = 0;
 			int nb_orientation_max = 0;
-			for(int i = 0; i < 360; ++i)
+			for(int i = 0; i < nb_orientations; ++i)
 			{
 				if(nb_occurences.at(i) > nb_orientation_max)
 				{
@@ -194,7 +194,7 @@ template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contou
 				}
 			}
 			// On l'ajoute dans l'ensemble O
-			ensemble_O.at<float>(x,y) = (float) orientation_majoritaire;
+			ensemble_O.at<uint8_t>(x,y) = orientation_majoritaire;
 		}
 	}
 	array<Mat, 2> canaux = {ensemble_O, ensemble_S};
