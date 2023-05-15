@@ -93,7 +93,6 @@ Mat cree_image_orientations(Mat orientations)
 			saturations.at<uint8_t>(x,y) = 255;
 		}
 	}
-	//imshow("intensites",intensites);
 	vector<Mat> canaux;
 	canaux.push_back(orientations);
 	canaux.push_back(saturations);
@@ -104,17 +103,17 @@ Mat cree_image_orientations(Mat orientations)
 	return res;
 }
 
-Mat cree_image_orientations(Mat orientation, Mat amplitude, int nb_seuils, int nb_orientations)
+Mat cree_image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations)
 {
 	Mat orientation_f, amplitude_f;
-	orientation.convertTo(orientation_f, CV_16FC1);
-	amplitude.convertTo(amplitude_f, CV_16FC1);
-	orientation_f *= 256.0/nb_orientations;
-	amplitude_f *= 256.0/nb_seuils;
+	orientation.convertTo(orientation_f, CV_32FC1);
+	amplitude.convertTo(amplitude_f, CV_32FC1);
+	orientation_f *= 180.0/nb_orientations;
+	amplitude_f *= 180.0/nb_seuils;
 	orientation_f.convertTo(orientation, CV_8UC1);
 	amplitude_f.convertTo(amplitude, CV_8UC1);
 	Mat res;
-	merge(array<Mat, 3>({amplitude, Mat(orientation.size(), CV_8UC1, 255), orientation}), res);
-	//cvtColor(res, res, COLOR_HSV2BGR);
+	merge(array<Mat, 3>({orientation, Mat(orientation.size(), CV_8UC1, 255), amplitude}), res);
+	cvtColor(res, res, COLOR_HSV2BGR);
 	return res;
 }

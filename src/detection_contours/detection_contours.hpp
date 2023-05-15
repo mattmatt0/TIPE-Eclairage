@@ -138,15 +138,6 @@ array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
 		}
 		orientations.at(i) = orientation;
 		contours.at(i) = contour;
-		/*imshow("ensemble X", ensembles_X.at(i)*255);
-		imshow("Contour", contour*255);
-		Mat disp_imgf;
-		orientation.convertTo(disp_imgf, CV_16FC1);
-		disp_imgf *= 256.0/200;
-		Mat disp_img;
-		disp_imgf.convertTo(disp_img, CV_8UC1);
-		imshow("Orientation", disp_img);
-		while(waitKeyEx() != 113);*/
 	}
 	return {contours, orientations};
 }
