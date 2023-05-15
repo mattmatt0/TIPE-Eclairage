@@ -70,7 +70,8 @@ void _calcule_normes()
 
 
 
-template <int nb_seuils> array<Mat, nb_seuils> separe_en_seuils(Mat image)
+template <int nb_seuils> 
+array<Mat, nb_seuils> separe_en_seuils(Mat image)
 {
 	// Séparation des pixels selon différent seuils
 	int pas = 255/nb_seuils;
@@ -87,7 +88,7 @@ template <int nb_seuils> array<Mat, nb_seuils> separe_en_seuils(Mat image)
 	return ensembles_X;
 }
 
-array<Mat, 3> calcul_TCS (array<Mat, 3> tab_mat)
+array<Mat, 3> calcul_TCS(array<Mat, 3> tab_mat)
 {
 	Mat canal1 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
 	Mat canal2 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
@@ -106,7 +107,8 @@ array<Mat, 3> calcul_TCS (array<Mat, 3> tab_mat)
 
 
 
-template <int n> array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
+template <int n> 
+array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
 {
 	// Calcul des contours
 	array<Mat, n> contours;
@@ -144,7 +146,8 @@ template <int n> array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensemble
 
 
 
-template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations, int nb_orientations)
+template<int nb_seuils> array<Mat, 2> 
+calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations, int nb_orientations)
 {
 	Size taille = contours.at(0).size();
 	int taille_x = taille.height;
@@ -219,14 +222,16 @@ array<Mat, 2> synthese_S_O_CTS(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 	return res;
 }
 
-template <int nb_seuils> array<Mat, 2> calcule_OS_NB(Mat source, int nb_orientations)
+template <int nb_seuils> 
+array<Mat, 2> calcule_OS_NB(Mat source, int nb_orientations)
 {
 	array<Mat, nb_seuils> ensembles_X = separe_en_seuils<nb_seuils>(source);
 	array<array<Mat, nb_seuils>, 2> contours = calcul_contours<nb_seuils>(ensembles_X);
 	return calcul_S_et_O<nb_seuils>(contours.at(0), contours.at(1), nb_orientations);
 }
 
-template <int nb_seuils> array<Mat, 2> calcule_OS_CTS(Mat source, int nb_orientations)
+template <int nb_seuils> 
+array<Mat, 2> calcule_OS_CTS(Mat source, int nb_orientations)
 {
 	array<Mat, 3> canaux = separe_hsv(source);
 	array<Mat, 3> ensembles_O;

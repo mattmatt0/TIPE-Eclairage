@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	_calcule_orientations(NB_ORIENTATIONS);
 	_calcule_normes();
 	array<Mat, 2> OS = calcule_OS_NB<NB_SEUILS>(image_source, NB_ORIENTATIONS);
-	imshow("Resultat", cree_image_orientation_amplitude(OS.at(0), OS.at(1), NB_SEUILS, NB_ORIENTATIONS));
+	imshow("Resultat", cree_image_orientations(OS.at(0), OS.at(1), NB_SEUILS, NB_ORIENTATIONS));
 
 	while(waitKeyEx() != 113);
 	return 0;

@@ -104,7 +104,7 @@ Mat cree_image_orientations(Mat orientations)
 	return res;
 }
 
-Mat cree_image_orientation_amplitude(Mat orientation, Mat amplitude, int nb_seuils, int nb_orientations)
+Mat cree_image_orientations(Mat orientation, Mat amplitude, int nb_seuils, int nb_orientations)
 {
 	Mat orientation_f, amplitude_f;
 	orientation.convertTo(orientation_f, CV_16FC1);
