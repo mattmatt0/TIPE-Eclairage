@@ -29,6 +29,55 @@ void _calcule_tables_tcs()
 	}
 }
 
+// Tables pour l'orientation et la norme
+array<uint8_t, 37*37> table_orientations;
+
+void _calcule_orientations(uint8_t nb_seuils)
+{
+	uint8_t orientation;
+	for(int dx = -18; dx <= 18; ++dx)
+	{
+		for(int dy = -18; dy <= 18; ++dy)
+		{
+			if(dx == 0 && dy == 0)
+				orientation = 0;
+			else
+				orientation = floor((atan2(dy,dx)/(2*pi) + 0.5) * nb_seuils);
+			table_orientations.at((dx+18)*37 + (dy*18)) = orientation;
+		}
+	}
+}
+
+array<uint8_t, 37*37> table_normes;
+void _calcule_normes(uint8_t nb_seuils)
+{
+	uint8_t val;
+	for(int dx = -18; dx <= 18; ++dx)
+	{
+		for(int dy = -18; dy <= 18; ++dy)
+		{
+			val = (dx*dx + dy*dy) > 2 ? 255 : 0;
+			table_normes.at((dx+18)*37 + (dy*18)) = val;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 template <int nb_seuils> array<Mat, nb_seuils> separe_en_seuils(Mat image)
 {
@@ -41,7 +90,7 @@ template <int nb_seuils> array<Mat, nb_seuils> separe_en_seuils(Mat image)
 	for(int i = 0; i < nb_seuils; ++i)
 	{
 		ensembles_X.at(i) = Mat();
-		threshold(image, ensembles_X.at(i), (i+1)*pas, 255, THRESH_BINARY);
+		threshold(image, ensembles_X.at(i), (i+1)*pas, 1, THRESH_BINARY);
 	}
 
 	return ensembles_X;
@@ -63,37 +112,41 @@ array<Mat, 3> calcul_TCS (array<Mat, 3> tab_mat)
 	return res;
 }
 
+
+
+
+
 template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
 {
 	// Calcul des contours
 	array<Mat, n> contours;
+	Size taille = ensemblesX.at(0).size();
+	uint16_t tailleX = taille.width;
+	uint16_t tailleY = taille.height;
 	for(int i = 0; i < n; ++i)
 	{
 		// Calcul des dérivées
 		Mat gradient_x, gradient_y;
-		Sobel(ensembles_X.at(i), gradient_x, CV_32FC1, 1, 0, 3);
-		Sobel(ensembles_X.at(i), gradient_y, CV_32FC1, 0, 1, 3);
+		Sobel(ensembles_X.at(i), gradient_x, CV_8C1, 1, 0, 5);
+		Sobel(ensembles_X.at(i), gradient_y, CV_8C1, 0, 1, 5);
 
-		// Conversion en flottants parce qu'il le faut
-		normalize(gradient_x, gradient_x);
-		normalize(gradient_y, gradient_y);
-		gradient_x *= 256.0;
-		gradient_y *= 256.0;
+		Mat orientation = Mat(taille, CV_8UC1);
+		Mat contour = Mat(taille, CV_8UC1);
 
-		// Conversion (x,y) -> (norme, direction)
-		Mat direction;
-		Mat norme;
-		phase(gradient_x, gradient_y, direction, true); // "true" pour avoir des degrés	
-		magnitude(gradient_x, gradient_y, norme);
-
-		// Décision des pixels qui font partie d'un contour ou non
-		Mat contour;
-		threshold(norme, contour, 0.5, 1.0, THRESH_BINARY);
-
+		uint16_t pos;
+		for(int x = 0; x < tailleX; ++x)
+		{
+			for(int y = 0; y < tailleY; ++y)
+			{
+				pos = (gradient_x.at<int8_t>(y,x)+18)*37 + gradient_y.at<int8_t>(y,x)+18;
+				orientation.at<uint8_t>(y,x) = table_orientations.at(pos);
+				contour.at<uint8_t>(y,x) = table_normes.at(pos);
+			}
+		}
 		// Ajout de l'orientation dans une matrice à trois canaux 
 		// (le 1er représentant l'orientation, le 2e valant 1.0 tout le temps 
 		//     et le 3e l'appartenance à un contour)
-		array<Mat, 3> canaux = {direction, Mat(direction.size(), CV_32F, 1.0), contour};
+		array<Mat, 3> canaux = {orientation, Mat(direction.size(), CV_8UC1, 255), contour};
 		merge(canaux,contours[i]);
 }
 	return contours;
@@ -102,8 +155,8 @@ template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
 template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contours)
 {
 	// Calcul de S et O
-	Mat ensemble_S = Mat::zeros(contours.at(0).size(), CV_32F);
-	Mat ensemble_O = Mat::zeros(contours.at(0).size(), CV_32F);
+	Mat ensemble_S = Mat::zeros(contours.at(0).size(), CV_8UC1);
+	Mat ensemble_O = Mat::zeros(contours.at(0).size(), CV_8UC1);
 	std::array<Mat, nb_seuils> orientations;
 	std::array<Mat, nb_seuils> appartient_contours;
 
@@ -122,7 +175,7 @@ template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contou
 		for(int y = 0; y < taille_y; ++y)
 		{
 			// On calcule l'orientation majoritaire
-			array<int, 360> nb_occurences;
+			array<int, nb_seuils> nb_occurences;
 			nb_occurences.fill(0);
 			// On compte, pour chaque orientation, le nombre de contours pour lequel il y a cette orientation
 			for(int i = 0; i < nb_seuils; ++i)
