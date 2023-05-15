@@ -192,32 +192,32 @@ template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> appart
 }
 
 
-array<Mat, 3> synthese_S_O_CTS(array<array<Mat, 2>, 3> canaux)
+array<Mat, 2> synthese_S_O_CTS(array<Mat, 3> ensembles_S, array<Mat, 3> ensembles_O)
 {
 	// Calcule S et O à partir des différentes valeurs de S et O calculées dans chacun des 3 canaux passés en paramètres.
-	Mat ensemble_S = Mat::zeros(canaux.at(0).at(0).size(), CV_32F);
-	Mat ensemble_O = Mat::zeros(canaux.at(0).at(0).size(), CV_32F);
-	int taille_x = canaux.at(0).at(0).size().height;
-	int taille_y = canaux.at(0).at(0).size().width;
+	Size taille = ensembles_S.at(0).size();
+	Mat ensemble_S = Mat::zeros(taille, CV_8UC1);
+	Mat ensemble_O = Mat::zeros(taille, CV_8UC1);
+	int taille_x = taille.height;
+	int taille_y = taille.width;
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
 			int id_max = 0;
-			float max = 0;
+			uint8_t max = 0;
 			for(int i = 0; i < 3; ++i)
 			{
-				if(canaux.at(i).at(1).at<float>(x,y) >= max)
+				if(ensembles_S.at(i).at<uint8_t>(x,y) >= max)
 				{
 					id_max = i;
-					max = canaux.at(i).at(1).at<float>(x,y);
+					max = ensembles_S.at(1).at<uint8_t>(x,y);
 				}
 			}
-			ensemble_S.at<float>(x,y) = max;
-			ensemble_O.at<float>(x,y) = canaux[id_max].at(0).at<float>(x,y);
+			ensemble_S.at<uint8_t>(x,y) = max;
+			ensemble_O.at<uint8_t>(x,y) = ensembles_O.at(id_max).at<uint8_t>(x,y);
 		}
 	}
-	array<Mat, 3> res = {ensemble_O, Mat(ensemble_O.size(), CV_32F, 1.0), ensemble_S};
+	array<Mat, 2> res = {ensemble_O, ensemble_S};
 	return res;
-
 }
