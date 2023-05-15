@@ -11,15 +11,9 @@ int main(int argc, char** argv)
 	}
 
 	Mat image_source = charge_image_hsv(argc, argv);
-	//imshow("img_source", image_source);
-	array<Mat,3> image_source_splited = separe_hsv(image_source);
-	/*imshow("img_hsv_1", image_source_splited.at(0));
-	imshow("img_hsv_2", image_source_splited.at(1));
-	imshow("img_hsv_3", image_source_splited.at(2));*/
+	array<Mat, 3> image_source_splited = separe_hsv(image_source);
 	array<Mat, 3> TCS_img = calcul_TCS(image_source_splited);	
 	imshow("img1", TCS_img.at(0));
-	//imshow("img2", TCS_img.at(1));
-	//imshow("img3", TCS_img.at(2));
 	
 
 	// Nombre de seuils pour les lignes de niveaux

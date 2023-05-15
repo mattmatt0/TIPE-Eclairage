@@ -1,4 +1,5 @@
 #include "outils/outils.hpp"
+#include "outils/constantes.hpp"
 
 
 // Coder fonction pour le calcul de Texton Color Space (TCS)
@@ -11,26 +12,28 @@ array<Mat, 3> separe_hsv(Mat image_hsv)
 	return canaux;
 }
 
-array<Mat, 3> calcul_TCS (array<Mat, 3> tab_mat)
+// Tables de valeurs pour accélérer le calcul du MFS CTS
+
+array<int8_t, 256*256> table_tcs_sin;
+array<int8_t, 256*256> table_tcs_cos;
+
+void _calcule_tables_tcs()
 {
-	Mat canal1 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
-	Mat canal2 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
-	for (int i = 0; i < canal1.rows; ++i)
+	for(int i = 0; i < 256; ++i)
 	{
-		for (int j = 0; j < canal1.cols; ++j)
+		for(int j = 0; j < 256; ++j)
 		{
-			canal1.at<uint8_t>(i,j) = floor(tab_mat.at(1).at<uint8_t>(i,j) * sin(float(tab_mat.at(0).at<uint8_t>(i,j))/180));
-			canal2.at<uint8_t>(i,j) = floor(tab_mat.at(1).at<uint8_t>(i,j) * cos(float(tab_mat.at(0).at<uint8_t>(i,j))/180));
+			table_tcs_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT));
+			table_tcs_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT));
 		}
 	}
-	array<Mat, 3> res = {canal1, canal2, tab_mat.at(2)};
-	return res;
 }
+
 
 template <int nb_seuils> array<Mat, nb_seuils> separe_en_seuils(Mat image)
 {
 	// Séparation des pixels selon différent seuils
-	int pas = 250/nb_seuils;
+	int pas = 255/nb_seuils;
 	int seuils[nb_seuils];
 
 	array<Mat, nb_seuils> ensembles_X;
@@ -44,17 +47,32 @@ template <int nb_seuils> array<Mat, nb_seuils> separe_en_seuils(Mat image)
 	return ensembles_X;
 }
 
+array<Mat, 3> calcul_TCS (array<Mat, 3> tab_mat)
+{
+	Mat canal1 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
+	Mat canal2 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
+	for (int i = 0; i < canal1.rows; ++i)
+	{
+		for (int j = 0; j < canal1.cols; ++j)
+		{
+			canal1.at<int8_t>(i,j) = table_tcs_cos.at(256*tab_mat[0].at<uint8_t>(i,j)+tab_mat[1].at<uint8_t>(i,j));
+			canal2.at<int8_t>(i,j) = table_tcs_sin.at(256*tab_mat[0].at<uint8_t>(i,j)+tab_mat[1].at<uint8_t>(i,j));
+		}
+	}
+	array<Mat, 3> res = {canal1, canal2, tab_mat.at(2)};
+	return res;
+}
+
 template <int n> array<Mat, n> calcul_contours(array<Mat, n>& ensembles_X)
 {
 	// Calcul des contours
 	array<Mat, n> contours;
 	for(int i = 0; i < n; ++i)
 	{
-
 		// Calcul des dérivées
 		Mat gradient_x, gradient_y;
-		Sobel(ensembles_X.at(i), gradient_x, CV_32F, 1, 0, 3);
-		Sobel(ensembles_X.at(i), gradient_y, CV_32F, 0, 1, 3);
+		Sobel(ensembles_X.at(i), gradient_x, CV_32FC1, 1, 0, 3);
+		Sobel(ensembles_X.at(i), gradient_y, CV_32FC1, 0, 1, 3);
 
 		// Conversion en flottants parce qu'il le faut
 		normalize(gradient_x, gradient_x);
@@ -129,6 +147,7 @@ template<int nb_seuils> array<Mat, 2> calcul_S_et_O(array<Mat, nb_seuils> contou
 	array<Mat, 2> canaux = {ensemble_O, ensemble_S};
 	return canaux;
 }
+
 
 array<Mat, 3> synthese_S_O_CTS(array<array<Mat, 2>, 3> canaux)
 {
