@@ -28,7 +28,7 @@ string type2str(int type)
 	return r;
 }
 
-vector<Mat> charge_repertoire_images(string repertoire, string extension)
+vector<Mat> charge_repertoire_images(string repertoire, string extension, int limite = -1)
 {
 	// Charge toutes les images dans `repertoire` avec l'extension `extension`
 	// `repertoire` ne doit pas comporter de "/" à la fin.
@@ -38,10 +38,10 @@ vector<Mat> charge_repertoire_images(string repertoire, string extension)
 	glob(repertoire + "/*." + extension, emplacements, false);
 
 	vector<Mat> images;
-	size_t nb_images = emplacements.size(); 
+	int nb_images = (limite == -1) ? emplacements.size() : limite; 
 	Mat image_courante;
 
-	for(size_t i = 0; i < nb_images; ++i)
+	for(int i = 0; i < nb_images; ++i)
 	{
 		cout << "Lecture de " + emplacements[i] << endl;
 		image_courante = imread(emplacements[i], IMREAD_GRAYSCALE);
