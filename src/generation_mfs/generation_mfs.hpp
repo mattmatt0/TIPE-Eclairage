@@ -1,6 +1,6 @@
 #include "detection_contours/detection_contours.hpp"
 
-Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations, int seuil)
+Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations)
 {
 	// Calcule R_t à partir du vecteur des valeurs de O à chaque instant t.
 	// R_t est l'ensemble des points ayant une orientation fixe pendant T images.
@@ -19,7 +19,7 @@ Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 		{
 			for(int i = t+1; i < t+T; ++i)
 			{
-				if(ensembles_S.at(i).at<uint8_t>(y,x) > seuil && abs((int8_t) ensembles_O.at(t).at<uint8_t>(y,x) - (int8_t)ensembles_O.at(i).at<uint8_t>(y,x)) >= 2)
+				if(abs((int8_t) ensembles_O.at(t).at<uint8_t>(y,x) - (int8_t)ensembles_O.at(i).at<uint8_t>(y,x)) >= 5)
 				{
 					res.at<uint8_t>(y,x) = 1;
 					break;
@@ -31,7 +31,7 @@ Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 	return res;
 }
 
-Mat calcule_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations, int seuil)
+Mat calcule_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations, uint8_t seuil)
 {
 	// Calcule l'ensemble D_t des pixels pour lesquels un mouvement a été detecté à l'instant t
 	// Cela implique soit que son orientation diffère de R_t, soit qu'il n'est pas dans R_t
@@ -42,15 +42,18 @@ Mat calcule_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 	int taille_y = taille.height;
 	
 	Mat res = Mat::zeros(taille, CV_8UC1);
-	Mat R = calcule_R(ensembles_O, ensembles_S, t, T, nb_orientations, seuil);
-	imshow("R", R);
+	Mat R = calcule_R(ensembles_O, ensembles_S, t, T, nb_orientations);
+	imshow("R", R*255);
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			if(R.at<uint8_t>(y,x) == 1 || abs((int8_t) R.at<uint8_t>(y,x) - (int8_t) ensembles_O.at(t).at<uint8_t>(y,x)) > 2)
+			if(ensembles_S.at(t+T).at<uint8_t>(y,x) >= seuil)
 			{
-				res.at<uint8_t>(y,x) = 1;
+				if(R.at<uint8_t>(y,x) == 0 || abs((int8_t) R.at<uint8_t>(y,x) - (int8_t) ensembles_O.at(t+T).at<uint8_t>(y,x)) > 1)
+				{
+					res.at<uint8_t>(y,x) = 1;
+				}
 			}
 		}
 	}

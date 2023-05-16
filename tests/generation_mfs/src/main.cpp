@@ -39,8 +39,8 @@ int main(int argc, char** argv)
 	{
 
 		Mat D = calcule_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
-		imshow("D", D);
-		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, NB_ORIENTATIONS);
+		imshow("D", D*255);
+		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
 		imshow("O", disp_imgO);
 		while(touche = waitKeyEx())
 		{
