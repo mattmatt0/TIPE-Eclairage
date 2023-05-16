@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
 	_calcule_orientations(NB_ORIENTATIONS);
 	_calcule_normes();
-	array<Mat, 2> SO = calcule_SO_NB<NB_SEUILS>(image_source, NB_ORIENTATIONS);
+	array<Mat, 2> SO = calcule_SO_NB(image_source, NB_SEUILS, NB_ORIENTATIONS);
 
 	Mat resultat = cree_image_orientations(SO.at(0), SO.at(1), NB_SEUILS, NB_ORIENTATIONS);
 	imshow("Resultat (HSV)", resultat);

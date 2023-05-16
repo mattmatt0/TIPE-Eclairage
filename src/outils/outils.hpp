@@ -77,39 +77,13 @@ Mat charge_image_hsv(int argc, char** argv)
 	return image_source; 
 }
 
-Mat cree_image_orientations(Mat orientations)
-{
-	// Pour afficher des orientations uniquement, avec 0 = absence d'orientation.
-	// Les orientations sont comprises entre 0 et 180, et doivent donc être stockées sur 8 bits
-
-	Mat intensites = Mat(orientations.size(), CV_8UC1);
-	Mat saturations = Mat(orientations.size(), CV_8UC1);
-	for(int x = 0; x < orientations.size().height; ++x)
-	{
-		for(int y = 0; y < orientations.size().width; ++y)
-		{
-			if(orientations.at<uint8_t>(x,y) == 0) intensites.at<uint8_t>(x,y) = 0;
-			else intensites.at<uint8_t>(x,y) = 255;
-			saturations.at<uint8_t>(x,y) = 255;
-		}
-	}
-	vector<Mat> canaux;
-	canaux.push_back(orientations);
-	canaux.push_back(saturations);
-	canaux.push_back(intensites);
-	Mat res;
-	merge(canaux, res);
-	cvtColor(res, res, COLOR_HSV2BGR);
-	return res;
-}
-
 Mat cree_image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations)
 {
 	Mat orientation_f, amplitude_f;
 	orientation.convertTo(orientation_f, CV_32FC1);
 	amplitude.convertTo(amplitude_f, CV_32FC1);
 	orientation_f *= 180.0/nb_orientations;
-	amplitude_f *= 180.0/nb_seuils;
+	amplitude_f *= 256.0/nb_seuils;
 	orientation_f.convertTo(orientation, CV_8UC1);
 	amplitude_f.convertTo(amplitude, CV_8UC1);
 	Mat res;
@@ -117,3 +91,11 @@ Mat cree_image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int n
 	cvtColor(res, res, COLOR_HSV2BGR);
 	return res;
 }
+
+Mat cree_image_orientations(Mat orientation, int nb_orientations)
+{
+	// Pour afficher des orientations uniquement, avec 0 = absence d'orientation.
+	// Les orientations sont comprises entre 0 et 180, et doivent donc être stockées sur 8 bits
+	return cree_image_orientations(Mat(orientation.size(), CV_8UC1, 1), orientation, 1, nb_orientations);
+}
+

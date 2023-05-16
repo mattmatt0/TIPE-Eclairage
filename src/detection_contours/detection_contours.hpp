@@ -70,19 +70,18 @@ void _calcule_normes()
 
 
 
-template <int nb_seuils> 
-array<Mat, nb_seuils> separe_en_seuils(Mat image)
+
+Mat *separe_en_seuils(Mat image, int nb_seuils)
 {
 	// Séparation des pixels selon différent seuils
 	int pas = 255/nb_seuils;
 	int seuils[nb_seuils];
 
-	array<Mat, nb_seuils> ensembles_X;
+	Mat *ensembles_X = new Mat[nb_seuils];
 
 	for(int i = 0; i < nb_seuils; ++i)
 	{
-		ensembles_X.at(i) = Mat();
-		threshold(image, ensembles_X.at(i), (i+1)*pas, 1, THRESH_BINARY);
+		threshold(image, ensembles_X[i], (i+1)*pas, 1, THRESH_BINARY);
 	}
 
 	return ensembles_X;
@@ -107,21 +106,20 @@ array<Mat, 3> calcul_TCS(array<Mat, 3> tab_mat)
 
 
 
-template <int n> 
-array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
+array<Mat*,2> calcul_contours(Mat* ensembles_X, int nb_seuils)
 {
 	// Calcul des contours
-	array<Mat, n> contours;
-	array<Mat, n> orientations;
-	Size taille = ensembles_X.at(0).size();
+	Mat* contours = new Mat[nb_seuils];
+	Mat* orientations = new Mat[nb_seuils];
+	Size taille = ensembles_X[0].size();
 	uint16_t tailleX = taille.width;
 	uint16_t tailleY = taille.height;
-	for(int i = 0; i < n; ++i)
+	for(int i = 0; i < nb_seuils; ++i)
 	{
 		// Calcul des dérivées
 		Mat gradient_x, gradient_y;
-		Sobel(ensembles_X.at(i), gradient_x, CV_16SC1, 1, 0, 5);
-		Sobel(ensembles_X.at(i), gradient_y, CV_16SC1, 0, 1, 5);
+		Sobel(ensembles_X[i], gradient_x, CV_16SC1, 1, 0, 5);
+		Sobel(ensembles_X[i], gradient_y, CV_16SC1, 0, 1, 5);
 
 		Mat orientation = Mat(taille, CV_8UC1);
 		Mat contour = Mat(taille, CV_8UC1);
@@ -136,8 +134,8 @@ array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
 				contour.at<uint8_t>(y,x) = table_normes.at(pos);
 			}
 		}
-		orientations.at(i) = orientation;
-		contours.at(i) = contour;
+		orientations[i] = orientation;
+		contours[i] = contour;
 	}
 	return {contours, orientations};
 }
@@ -146,10 +144,9 @@ array<array<Mat, n>, 2> calcul_contours(array<Mat, n>& ensembles_X)
 
 
 
-template<int nb_seuils> array<Mat, 2> 
-calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations, int nb_orientations)
+array<Mat, 2> calcul_S_et_O(Mat* contours, Mat* orientations, int nb_seuils, int nb_orientations)
 {
-	Size taille = contours.at(0).size();
+	Size taille = contours[0].size();
 	int taille_x = taille.width;
 	int taille_y = taille.height;
 	// Calcul de S et O
@@ -166,10 +163,10 @@ calcul_S_et_O(array<Mat, nb_seuils> contours, array<Mat, nb_seuils> orientations
 			// On compte, pour chaque orientation, le nombre de contours pour lequel il y a cette orientation
 			for(int i = 0; i < nb_seuils; ++i)
 			{
-				if(contours.at(i).template at<uint8_t>(y,x) == 1)
+				if(contours[i].at<uint8_t>(y,x) == 1)
 				{
 					ensemble_S.at<uint8_t>(y,x)++;
-					nb_occurrences[orientations.at(i).template at<uint8_t>(y,x)]++;
+					nb_occurrences[orientations[i].at<uint8_t>(y,x)]++;
 				}
 			}
 			int orientation_majoritaire = 0;
@@ -222,16 +219,18 @@ array<Mat, 2> synthese_S_O_CTS(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 	return res;
 }
 
-template <int nb_seuils> 
-array<Mat, 2> calcule_SO_NB(Mat source, int nb_orientations)
+array<Mat, 2> calcule_SO_NB(Mat source, int nb_seuils, int nb_orientations)
 {
-	array<Mat, nb_seuils> ensembles_X = separe_en_seuils<nb_seuils>(source);
-	array<array<Mat, nb_seuils>, 2> contours = calcul_contours<nb_seuils>(ensembles_X);
-	return calcul_S_et_O<nb_seuils>(contours.at(0), contours.at(1), nb_orientations);
+	Mat* ensembles_X = separe_en_seuils(source,nb_seuils);
+	array<Mat*, 2> contours = calcul_contours(ensembles_X, nb_seuils);
+	delete [] ensembles_X;
+	array<Mat, 2> res = calcul_S_et_O(contours.at(0), contours.at(1), nb_seuils, nb_orientations);
+	delete [] contours.at(0);
+	delete [] contours.at(1);
+	return res;
 }
 
-template <int nb_seuils> 
-array<Mat, 2> calcule_SO_CTS(Mat source, int nb_orientations)
+array<Mat, 2> calcule_SO_CTS(Mat source, int nb_seuils, int nb_orientations)
 {
 	array<Mat, 3> canaux = separe_hsv(source);
 	array<Mat, 3> ensembles_O;
@@ -239,7 +238,7 @@ array<Mat, 2> calcule_SO_CTS(Mat source, int nb_orientations)
 	array<Mat, 2> ensemble_SO;
 	for(int i = 0; i < 3; ++i)
 	{
-		ensemble_SO = calcule_SO_NB<nb_seuils>(canaux.at(i), nb_orientations);
+		ensemble_SO = calcule_SO_NB(canaux.at(i), nb_seuils, nb_orientations);
 		ensembles_S.at(i) = ensemble_SO.at(0);
 		ensembles_O.at(i) = ensemble_SO.at(1);
 	}

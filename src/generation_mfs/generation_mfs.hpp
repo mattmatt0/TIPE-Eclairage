@@ -16,7 +16,7 @@ Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			res.at<uint8_t>(x,y) = floor(floor(ensembles_O.at(t).at<float>(x,y) / 360 * nb_orientations) * seuil);
+			res.at<uint8_t>(x,y) = floor(floor(ensembles_O.at(t).at<uint8_t>(x,y) / 360 * nb_orientations) * seuil);
 		}
 	}
 	
@@ -28,8 +28,8 @@ Mat calcule_R(vector<Mat> ensembles_O, int t, int T, int nb_orientations)
 		{
 			for(int i = t+1; i < t+T; ++i)
 			{
-				if(res.at<uint8_t>(x,y) > ensembles_O.at(i).at<float>(x,y) + seuil ||
-					res.at<int8_t>(x,y) < ensembles_O.at(i).at<float>(x,y) - seuil)
+				if(res.at<uint8_t>(x,y) > ensembles_O.at(i).at<uint8_t>(x,y) + seuil ||
+					res.at<int8_t>(x,y) < ensembles_O.at(i).at<uint8_t>(x,y) - seuil)
 				{
 					res.at<uint8_t>(x,y) = 255;
 					break;
@@ -57,9 +57,9 @@ Mat calcule_D(vector<Mat> images, int t, int T, int nb_orientations)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			if(R.at<uint8_t>(x,y) == 255 || R.at<uint8_t>(x,y) > images.at(t+T).at<float>(x,y) + seuil || R.at<uint8_t>(x,y) < images.at(t+T).at<float>(x,y) - seuil)
+			if(R.at<uint8_t>(x,y) == 255 || R.at<uint8_t>(x,y) > images.at(t+T).at<uint8_t>(x,y) + seuil || R.at<uint8_t>(x,y) < images.at(t+T).at<uint8_t>(x,y) - seuil)
 			{
-				res.at<uint8_t>(x,y) = floor(images.at(t+T).at<float>(x,y));
+				res.at<uint8_t>(x,y) = floor(images.at(t+T).at<uint8_t>(x,y));
 			}
 		}
 	}
