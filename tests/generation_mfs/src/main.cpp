@@ -22,13 +22,14 @@ int main(int argc, char** argv)
 	_calcule_normes();
 
 	vector<Mat> images = charge_repertoire_images(rep_source, extension, nb_images);
-	vector<Mat> ensembles_O;
+	vector<Mat> ensembles_O, ensembles_S;
 
 	nb_images = images.size();
 	for(int i = 0; i < nb_images; ++i)
 	{
 		cout << "Traitement de l'image n° " << i+1 << "/" << nb_images << endl;
 		array<Mat, 2> SO = calcule_SO_NB(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
+		ensembles_S.push_back(SO.at(0));
 		ensembles_O.push_back(SO.at(1));
 	}
 
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
 	for(int t = 0; t + T < ensembles_O.size(); ++t)
 	{
 
-		Mat D = calcule_D(ensembles_O, t, T, NB_ORIENTATIONS);
+		Mat D = calcule_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
 		imshow("D", D);
 		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, NB_ORIENTATIONS);
 		imshow("O", disp_imgO);
