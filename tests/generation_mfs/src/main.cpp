@@ -11,7 +11,8 @@ int main(int argc, char** argv)
 	}
 
 	int const NB_SEUILS = parser.get<int>("nb-seuils");
-	int const NB_ORIENTATIONS = 200;
+	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
+	std::cout << "Calcul pour " << NB_ORIENTATIONS << "orientations" << endl;
 	int const T = parser.get<int>("tau");
 	int nb_images = parser.get<int>("nb-img");
 	string rep_source = parser.get<String>("rep-source");
