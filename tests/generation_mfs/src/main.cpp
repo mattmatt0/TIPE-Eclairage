@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {	
-	CommandLineParser parser(argc, argv, params_generiques+params_analyse+params_images);
+	CommandLineParser parser(argc, argv, params_generiques+params_analyse+params_images+param_sauvegarde_dossier);
 	if(parser.has("help"))
 	{
 		parser.printMessage();
@@ -16,6 +16,7 @@ int main(int argc, char** argv)
 	int const T = parser.get<int>("tau");
 	int nb_images = parser.get<int>("nb-img");
 	string rep_source = parser.get<String>("rep-source");
+	string rep_dest = parser.get<String>("rep-dest");
 	string extension = parser.get<String>("extension");
 
 	_calcule_orientations(NB_ORIENTATIONS);
@@ -39,14 +40,8 @@ int main(int argc, char** argv)
 	{
 
 		Mat D = calcule_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
-		imshow("D", D*255);
 		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
-		imshow("O", disp_imgO);
-		while(touche = waitKeyEx())
-		{
-			if(touche == TOUCHE_Q) {t = ensembles_O.size(); break;}
-			else if (touche == TOUCHE_N) break;
-		};
+		imwrite(rep_dest+"/"+to_string(t)+"."+extension, disp_imgO);
 	}
 	return 0;
 
