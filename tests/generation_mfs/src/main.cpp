@@ -41,7 +41,8 @@ int main(int argc, char** argv)
 
 		Mat D = calcule_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
 		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
-		imwrite(rep_dest+"/"+to_string(t)+"."+extension, disp_imgO);
+		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_imgO);
+		cout << rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension << endl;
 	}
 	return 0;
 

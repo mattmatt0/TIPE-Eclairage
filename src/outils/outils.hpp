@@ -99,3 +99,18 @@ Mat cree_image_orientations(Mat orientation, int nb_orientations)
 	return cree_image_orientations(Mat(orientation.size(), CV_8UC1, 1), orientation, 1, nb_orientations);
 }
 
+
+string nombre_taille_fixe(unsigned int nb, size_t taille)
+{
+	if(nb == 0) return String(taille, '0');
+	string res = "";
+	while(nb != 0)
+	{
+		res += ((char) nb % 10 + 48);
+		--taille;
+		nb /= 10;
+	}
+	res += String(taille, '0');
+	reverse(res.begin(), res.end());
+	return res;
+}
