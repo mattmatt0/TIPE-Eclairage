@@ -56,7 +56,7 @@ void _calcule_normes()
 	{
 		for(int dy = -48; dy <= 48; ++dy)
 		{
-			val = (dx*dx + dy*dy) > 500 ? 1 : 0;
+			val = (dx*dx + dy*dy) > 2000 ? 1 : 0;
 			table_normes.at((dy+48)*97 + dx+48) = val;
 		}
 	}
