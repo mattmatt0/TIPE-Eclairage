@@ -20,6 +20,7 @@ int main(int argc, char** argv)
 
 	_calcul_table_orientations(NB_ORIENTATIONS);
 	_calcul_table_normes();
+	_calcul_table_seuils(NB_SEUILS);
 
 	vector<Mat> images = chargement_repertoire_images(rep_source, extension, nb_images);
 	vector<Mat> ensembles_O, ensembles_S;
