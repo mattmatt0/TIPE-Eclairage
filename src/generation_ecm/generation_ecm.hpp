@@ -1,6 +1,6 @@
 #include "detection_contours/detection_contours.hpp"
 
-Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations)
+Mat calcul_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations)
 {
 	// Calcule R_t à partir du vecteur des valeurs de O à chaque instant t.
 	// R_t est l'ensemble des points ayant une orientation fixe pendant T images.
@@ -29,7 +29,7 @@ Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 	return res;
 }
 
-Mat calcule_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations, uint8_t seuil)
+Mat calcul_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations, uint8_t seuil)
 {
 	// Calcule l'ensemble D_t des pixels pour lesquels un mouvement a été detecté à l'instant t
 	// Cela implique soit que son orientation diffère de R_t, soit qu'il n'est pas dans R_t
@@ -40,7 +40,7 @@ Mat calcule_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 	int taille_y = taille.height;
 	
 	Mat res = Mat::zeros(taille, CV_8UC1);
-	Mat R = calcule_R(ensembles_O, ensembles_S, t, T, nb_orientations);
+	Mat R = calcul_R(ensembles_O, ensembles_S, t, T, nb_orientations);
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)

@@ -18,17 +18,17 @@ int main(int argc, char** argv)
 	string rep_dest = parser.get<String>("rep-dest");
 	string extension = parser.get<String>("extension");
 
-	_calcule_orientations(NB_ORIENTATIONS);
-	_calcule_normes();
+	_calcul_table_orientations(NB_ORIENTATIONS);
+	_calcul_table_normes();
 
-	vector<Mat> images = charge_repertoire_images(rep_source, extension, nb_images);
+	vector<Mat> images = chargement_repertoire_images(rep_source, extension, nb_images);
 	vector<Mat> ensembles_O, ensembles_S;
 	nb_images = images.size();
 
 	cout << "Calcul des contours..." << endl;
 	for(int i = 0; i < nb_images; ++i)
 	{
-		array<Mat, 2> SO = calcule_SO_NB(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
+		array<Mat, 2> SO = calcul_SO_NB(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
 		ensembles_S.push_back(SO.at(0));
 		ensembles_O.push_back(SO.at(1));
 		if((i & 31) == 31)
@@ -44,8 +44,8 @@ int main(int argc, char** argv)
 	for(int t = 0; t + T < ensembles_O.size(); ++t)
 	{
 
-		Mat D = calcule_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
-		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
+		Mat D = calcul_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
+		Mat disp_imgO = image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
 		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_imgO);
 	}
 	cout << "Terminé ! " << endl;

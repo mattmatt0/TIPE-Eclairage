@@ -32,7 +32,7 @@ string type2str(int type)
 	return r;
 }
 
-vector<Mat> charge_repertoire_images(string repertoire, string extension, int limite = -1)
+vector<Mat> chargement_repertoire_images(string repertoire, string extension, int limite = -1)
 {
 	// Charge toutes les images dans `repertoire` avec l'extension `extension`
 	// `repertoire` ne doit pas comporter de "/" à la fin.
@@ -57,7 +57,7 @@ vector<Mat> charge_repertoire_images(string repertoire, string extension, int li
 	return images;
 }
 
-Mat charge_image(string emplacement)
+Mat chargement_image(string emplacement)
 {
 	// On charge l'image donnée en paramètre (par défaut img.png dans le dossier source) en noir et blanc
 	Mat image_chargee = imread(emplacement, IMREAD_GRAYSCALE);
@@ -67,7 +67,7 @@ Mat charge_image(string emplacement)
 	return image_source;
 }
 
-Mat charge_image_hsv(string emplacement)
+Mat chargement_image_hsv(string emplacement)
 {
 	// On charge l'image donnée en paramètre du programme dans l'espace de couleur BGR
 	Mat image_1 = imread(emplacement, IMREAD_COLOR);
@@ -78,7 +78,7 @@ Mat charge_image_hsv(string emplacement)
 	return image_1; 
 }
 
-Mat cree_image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations)
+Mat image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations)
 {
 	Mat orientation_f, amplitude_f;
 	orientation.convertTo(orientation_f, CV_32FC1);
@@ -93,11 +93,11 @@ Mat cree_image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int n
 	return res;
 }
 
-Mat cree_image_orientations(Mat orientation, int nb_orientations)
+Mat image_orientations(Mat orientation, int nb_orientations)
 {
 	// Pour afficher des orientations uniquement, avec 0 = absence d'orientation.
 	// Les orientations sont comprises entre 0 et 180, et doivent donc être stockées sur 8 bits
-	return cree_image_orientations(Mat(orientation.size(), CV_8UC1, 1), orientation, 1, nb_orientations);
+	return image_orientations(Mat(orientation.size(), CV_8UC1, 1), orientation, 1, nb_orientations);
 }
 
 
@@ -120,12 +120,12 @@ void attend_q() { while(waitKeyEx() != TOUCHE_Q); }
 
 void affiche_image_debug(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations, string nom = "Debug Image")
 {
-	imshow(nom, cree_image_orientations(amplitude, orientation, nb_seuils, nb_orientations));
+	imshow(nom, image_orientations(amplitude, orientation, nb_seuils, nb_orientations));
 	attend_q();
 }
 
 void affiche_image_debug(Mat orientation, int nb_orientations, string nom = "Debug Image")
 {
-	imshow(nom, cree_image_orientations(orientation, nb_orientations));
+	imshow(nom, image_orientations(orientation, nb_orientations));
 	attend_q();
 }

@@ -2,7 +2,7 @@
 
 string const params = params_generiques + params_image + params_analyse + "{mode | rgb | Espace colorimétrique à utiliser: soit ect (Espace de Couleur Texton), soit rgb}";
 
-array<Mat, 3> separe_hsv(Mat image_hsv)
+array<Mat, 3> canaux_hsv(Mat image_hsv)
 {
 	array<Mat, 3> canaux;
 	split(image_hsv, canaux);
@@ -14,7 +14,7 @@ array<Mat, 3> separe_hsv(Mat image_hsv)
 array<uint8_t, 256*256> table_ect_sin;
 array<uint8_t, 256*256> table_ect_cos;
 
-void _calcule_tables_ect()
+void _calcul_tables_ect()
 {
 	for(int i = 0; i < 256; ++i)
 	{
@@ -29,7 +29,7 @@ void _calcule_tables_ect()
 // Tables pour l'orientation et la norme
 array<uint8_t, 97*97> table_orientations;
 
-void _calcule_orientations(uint8_t nb_orientations)
+void _calcul_table_orientations(uint8_t nb_orientations)
 {
 	uint8_t orientation;
 	for(int dx = -48; dx <= 48; ++dx)
@@ -46,7 +46,7 @@ void _calcule_orientations(uint8_t nb_orientations)
 }
 
 array<uint8_t, 97*97> table_normes;
-void _calcule_normes()
+void _calcul_table_normes()
 {
 	uint8_t val;
 	for(int dx = -48; dx <= 48; ++dx)
@@ -68,7 +68,7 @@ void _calcule_normes()
 
 
 
-Mat *separe_en_seuils(Mat image, int nb_seuils)
+Mat *seuils(Mat image, int nb_seuils)
 {
 	// Séparation des pixels selon différent seuils
 	int pas = 255/nb_seuils;
@@ -219,9 +219,9 @@ array<Mat, 2> synthese_S_O_ECT(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 	return res;
 }
 
-array<Mat, 2> calcule_SO_NB(Mat source, int nb_seuils, int nb_orientations)
+array<Mat, 2> calcul_SO_NB(Mat source, int nb_seuils, int nb_orientations)
 {
-	Mat* ensembles_X = separe_en_seuils(source,nb_seuils);
+	Mat* ensembles_X = seuils(source,nb_seuils);
 	array<Mat*, 2> contours = calcul_contours(ensembles_X, nb_seuils);
 	delete [] ensembles_X;
 	array<Mat, 2> res = calcul_S_et_O(contours.at(0), contours.at(1), nb_seuils, nb_orientations);
@@ -230,15 +230,15 @@ array<Mat, 2> calcule_SO_NB(Mat source, int nb_seuils, int nb_orientations)
 	return res;
 }
 
-array<Mat, 2> calcule_SO_ECT(Mat source, int nb_seuils, int nb_orientations)
+array<Mat, 2> calcul_SO_ECT(Mat source, int nb_seuils, int nb_orientations)
 {
-	array<Mat, 3> canaux = calcul_ECT(separe_hsv(source));
+	array<Mat, 3> canaux = calcul_ECT(canaux_hsv(source));
 	array<Mat, 3> ensembles_O;
 	array<Mat, 3> ensembles_S;
 	array<Mat, 2> ensemble_SO;
 	for(int i = 0; i < 3; ++i)
 	{
-		ensemble_SO = calcule_SO_NB(canaux.at(i), nb_seuils, nb_orientations);
+		ensemble_SO = calcul_SO_NB(canaux.at(i), nb_seuils, nb_orientations);
 		ensembles_S.at(i) = ensemble_SO.at(0);
 		ensembles_O.at(i) = ensemble_SO.at(1);
 

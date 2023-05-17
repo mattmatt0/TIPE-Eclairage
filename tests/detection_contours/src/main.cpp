@@ -12,8 +12,8 @@ int main(int argc, char** argv)
 	// Nombre de seuils pour les lignes de niveaux
 	int const NB_SEUILS = parser.get<int>("nb-seuils");
 	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
-	_calcule_orientations(NB_ORIENTATIONS);
-	_calcule_normes();
+	_calcul_table_orientations(NB_ORIENTATIONS);
+	_calcul_table_normes();
 	string emplacement = parser.get<String>("img-src");
 	string mode = parser.get<string>("mode");
 
@@ -21,14 +21,14 @@ int main(int argc, char** argv)
 	array<Mat, 2> SO;
 	if(mode == "rgb")
 	{
-			image_source = charge_image(emplacement);
-			SO = calcule_SO_NB(image_source, NB_SEUILS, NB_ORIENTATIONS);
+			image_source = chargement_image(emplacement);
+			SO = calcul_SO_NB(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else if(mode == "ect" || mode == "tcs" || mode == "cts")
 	{
-		_calcule_tables_ect();
-		image_source = charge_image_hsv(emplacement);
-		SO = calcule_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
+		_calcul_tables_ect();
+		image_source = chargement_image_hsv(emplacement);
+		SO = calcul_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else
 	{
