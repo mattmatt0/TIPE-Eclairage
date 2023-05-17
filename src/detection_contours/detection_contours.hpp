@@ -1,7 +1,7 @@
 #include "outils/outils.hpp"
 #include "outils/constantes.hpp"
 
-string const params = params_generiques + params_image + params_analyse + "{mode | tcs | Espace colorimétrique à utiliser: soit tcs (Texton Color Space), soit rgb}";
+string const params = params_generiques + params_image + params_analyse + "{mode | rgb | Espace colorimétrique à utiliser: soit tcs (Texton Color Space), soit rgb}";
 
 // Coder fonction pour le calcul de Texton Color Space (TCS)
 // Définir un nouveau type struct pour renvoyer les 3 canaux
