@@ -35,7 +35,11 @@ int main(int argc, char** argv)
 		cout << "Erreur: mode invalide (ce doit être \"ect\" ou \"rgb\")" << endl;
 		return 1;
 	}
-
+	
+	cout << "Filtre X:" << endl;
+	affiche_noyau_sobel(1, 0, 5);
+	cout << "Filtre Y:" << endl;
+	affiche_noyau_sobel(0, 1, 5);
 
 	affiche_image_debug(SO.at(0), SO.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours");
 	return 0;

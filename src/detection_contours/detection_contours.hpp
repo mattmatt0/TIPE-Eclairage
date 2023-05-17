@@ -140,11 +140,12 @@ array<Mat*,2> calcul_contours(Mat* ensembles_X, int nb_seuils)
 	return {contours, orientations};
 }
 
+/*
 array<Mat, 2> calcul_SO_rapide(Mat image, int nb_seuils, int nb_orientations)
 {
 
 }
-
+*/
 
 
 array<Mat, 2> calcul_S_et_O(Mat* contours, Mat* orientations, int nb_seuils, int nb_orientations)
