@@ -21,8 +21,8 @@ void _calcule_tables_ect()
 	{
 		for(int j = 0; j < 256; ++j)
 		{
-			table_ect_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT) / 2.0) + 127;
-			table_ect_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT) / 2.0) + 127;
+			table_ect_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT));
+			table_ect_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT));
 		}
 	}
 }
@@ -194,10 +194,10 @@ array<Mat, 2> synthese_S_O_ECT(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 {
 	// Calcule S et O à partir des différentes valeurs de S et O calculées dans chacun des 3 canaux passés en paramètres.
 	Size taille = ensembles_S.at(0).size();
-	Mat ensemble_S = Mat::zeros(taille, CV_8UC1);
-	Mat ensemble_O = Mat::zeros(taille, CV_8UC1);
-	int taille_x = taille.height;
-	int taille_y = taille.width;
+	Mat ensemble_S = Mat(taille, CV_8UC1);
+	Mat ensemble_O = Mat(taille, CV_8UC1);
+	int taille_x = taille.width;
+	int taille_y = taille.height;
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
@@ -206,17 +206,17 @@ array<Mat, 2> synthese_S_O_ECT(array<Mat, 3> ensembles_S, array<Mat, 3> ensemble
 			uint8_t max = 0;
 			for(int i = 0; i < 3; ++i)
 			{
-				if(ensembles_S.at(i).at<uint8_t>(x,y) >= max)
+				if(ensembles_S.at(i).at<uint8_t>(y,x) > max)
 				{
 					id_max = i;
-					max = ensembles_S.at(1).at<uint8_t>(x,y);
+					max = ensembles_S.at(i).at<uint8_t>(y,x);
 				}
 			}
-			ensemble_S.at<uint8_t>(x,y) = max;
-			ensemble_O.at<uint8_t>(x,y) = ensembles_O.at(id_max).at<uint8_t>(x,y);
+			ensemble_S.at<uint8_t>(y,x) = max;
+			ensemble_O.at<uint8_t>(y,x) = ensembles_O.at(id_max).at<uint8_t>(y,x);
 		}
 	}
-	array<Mat, 2> res = {ensemble_O, ensemble_S};
+	array<Mat, 2> res = {ensemble_S, ensemble_O};
 	return res;
 }
 
@@ -242,6 +242,7 @@ array<Mat, 2> calcule_SO_ECT(Mat source, int nb_seuils, int nb_orientations)
 		ensemble_SO = calcule_SO_NB(canaux.at(i), nb_seuils, nb_orientations);
 		ensembles_S.at(i) = ensemble_SO.at(0);
 		ensembles_O.at(i) = ensemble_SO.at(1);
+
 	}
 	return synthese_S_O_ECT(ensembles_S, ensembles_O);
 }

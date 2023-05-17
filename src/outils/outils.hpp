@@ -66,12 +66,12 @@ Mat charge_image(string emplacement)
 Mat charge_image_hsv(string emplacement)
 {
 	// On charge l'image donnée en paramètre du programme dans l'espace de couleur BGR
-	Mat image_chargee = imread(emplacement, IMREAD_COLOR);
+	Mat image_1 = imread(emplacement, IMREAD_COLOR);
 	// On convertit l'image dans l'espace de couleur HSV
-	Mat image_source;
-	cvtColor(image_chargee, image_source, COLOR_BGR2HSV);
-	bilateralFilter(image_chargee, image_source, 10, 20, 5);
-	return image_source; 
+	Mat image_2;
+	cvtColor(image_1, image_2, COLOR_BGR2HSV);
+	bilateralFilter(image_2, image_1, 10, 20, 5);
+	return image_1; 
 }
 
 Mat cree_image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations)

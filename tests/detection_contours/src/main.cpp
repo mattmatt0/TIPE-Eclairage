@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	Mat resultat = cree_image_orientations(SO.at(0), SO.at(1), NB_SEUILS, NB_ORIENTATIONS);
+	Mat resultat = cree_image_orientations(SO.at(0)*10, SO.at(1), NB_SEUILS, NB_ORIENTATIONS);
 	imshow("Resultat", resultat);
 
 	while(waitKeyEx() != 113);
