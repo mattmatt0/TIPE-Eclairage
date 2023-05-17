@@ -11,7 +11,6 @@ Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 
 	Mat res = Mat::zeros(taille, CV_8UC1);
 	
-	cout << "Vérification de la stabilité..." << endl;
 	// Puis on vérifie la stabilité des orientations
 	for(int x = 0; x < taille_x; ++x)
 	{
@@ -27,7 +26,6 @@ Mat calcule_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 			}
 		}
 	}
-	cout << "Terminé !" << endl;
 	return res;
 }
 
@@ -43,7 +41,6 @@ Mat calcule_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, in
 	
 	Mat res = Mat::zeros(taille, CV_8UC1);
 	Mat R = calcule_R(ensembles_O, ensembles_S, t, T, nb_orientations);
-	imshow("R", R*255);
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)

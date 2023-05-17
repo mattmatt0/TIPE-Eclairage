@@ -12,7 +12,6 @@ int main(int argc, char** argv)
 
 	int const NB_SEUILS = parser.get<int>("nb-seuils");
 	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
-	std::cout << "Calcul pour " << NB_ORIENTATIONS << "orientations" << endl;
 	int const T = parser.get<int>("tau");
 	int nb_images = parser.get<int>("nb-img");
 	string rep_source = parser.get<String>("rep-src");
@@ -24,18 +23,24 @@ int main(int argc, char** argv)
 
 	vector<Mat> images = charge_repertoire_images(rep_source, extension, nb_images);
 	vector<Mat> ensembles_O, ensembles_S;
-
 	nb_images = images.size();
+
+	cout << "Calcul des contours..." << endl;
 	for(int i = 0; i < nb_images; ++i)
 	{
-		cout << "Traitement de l'image n° " << i+1 << "/" << nb_images << endl;
 		array<Mat, 2> SO = calcule_SO_NB(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
 		ensembles_S.push_back(SO.at(0));
 		ensembles_O.push_back(SO.at(1));
+		if((i & 31) == 31)
+		{
+			cout << i+1 << " images traitées sur " << nb_images << endl;
+		}
 	}
-
+	cout << "Calcul des contours terminé !" << endl;
 
 	int touche;
+	cout << "Calcul de l'espace de caractéristiques de mouvement (ECM)..." << endl;
+	cout << "Format de la forme: " << rep_dest+"/"+nombre_taille_fixe(0, 5)+"."+extension << endl;
 	for(int t = 0; t + T < ensembles_O.size(); ++t)
 	{
 
@@ -43,6 +48,7 @@ int main(int argc, char** argv)
 		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
 		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_imgO);
 	}
+	cout << "Terminé ! " << endl;
 	return 0;
 
 }

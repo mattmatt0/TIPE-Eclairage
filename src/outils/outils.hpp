@@ -38,7 +38,7 @@ vector<Mat> charge_repertoire_images(string repertoire, string extension, int li
 	// `repertoire` ne doit pas comporter de "/" à la fin.
 	// `extension` ne doit pas comporter de "." au début
 	vector<cv::String> emplacements;
-	cout << "Recherche d'images dans " << repertoire + "/*." + extension << endl;
+	cout << "Chargement des images d'emplacement " << repertoire + "/*." + extension << endl;
 	glob(repertoire + "/*." + extension, emplacements, false);
 
 	vector<Mat> images;
@@ -47,12 +47,12 @@ vector<Mat> charge_repertoire_images(string repertoire, string extension, int li
 
 	for(int i = 0; i < nb_images; ++i)
 	{
-		cout << "Lecture de " + emplacements[i] << endl;
 		image_courante = imread(emplacements[i], IMREAD_GRAYSCALE);
 		Mat img_filtree;
 		bilateralFilter(image_courante, img_filtree, 10, 20, 5);
     	images.push_back(img_filtree);
 	}
+	cout << nb_images << " images lues" << endl;
 	
 	return images;
 }
