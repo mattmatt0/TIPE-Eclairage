@@ -28,10 +28,10 @@ int main(int argc, char** argv)
 	cout << "Calcul des contours..." << endl;
 	for(int i = 0; i < nb_images; ++i)
 	{
-		array<Mat, 2> SO = calcul_SO_NB(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
+		array<Mat, 2> SO = calcul_SO_rapide(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
 		ensembles_S.push_back(SO.at(0));
 		ensembles_O.push_back(SO.at(1));
-		if((i & 31) == 31)
+		if((i & 7) == 7)
 		{
 			cout << i+1 << " images traitées sur " << nb_images << endl;
 		}
