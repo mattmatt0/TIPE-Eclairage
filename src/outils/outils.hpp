@@ -129,3 +129,33 @@ void affiche_image_debug(Mat orientation, int nb_orientations, string nom = "Deb
 	imshow(nom, image_orientations(orientation, nb_orientations));
 	attend_q();
 }
+
+void affiche_matrice_entiere(Mat m,  uint8_t taille_coeffs=3)
+{
+	Size taille = m.size();
+	int taille_x = taille.width;
+	int taille_y = taille.height;
+	for(int y = 0; y < taille_y; ++y)
+	{
+		for(int x = 0; x < taille_x; ++x)
+		{
+			if(Mat.at<int>(y,x) < 0)
+				cout << "-" << nombre_taille_fixe(-Mat.at<int>(y,x), taille_coeffs-1) << " " << endl;
+			else
+				cout << nombre_taille_fixe(Mat.at<int>(y,x), taille_coeffs) << " " << endl;
+		}
+	}
+}
+
+void affiche_noyau_sobel(uint8_t ordre_x, uint8_t ordre_y, uint8_t taille)
+{
+	Mat noyau_x, noyau_y;
+	getDerivKernels(noyau_x, noyau_y, ordre_x, ordre_y, taille);
+	Mat noyau_entier_x, noyau_entier_y;
+	noyau_x.convertTo(noyau_entier_x, CV_32C1);
+	noyau_y.convertTo(noyau_entier_y, CV_32C1);
+	cout << "----------------------\nNoyau x:\n----------------------" << endl;
+	affiche_matrice_entiere(noyau_entier_x);
+	cout << "----------------------\nNoyau y:\n----------------------" << endl;
+	affiche_matrice_entiere(noyau_entier_y);
+}
