@@ -1,0 +1,5 @@
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+find_package( OpenCV REQUIRED )
+add_executable(GenerationECM main.cpp)
+target_link_libraries(GenerationECM ${OpenCV_LIBS} )
