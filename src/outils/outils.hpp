@@ -53,23 +53,20 @@ vector<Mat> charge_repertoire_images(string repertoire, string extension, int li
 	return images;
 }
 
-Mat charge_image(int argc, char** argv)
+Mat charge_image(string emplacement)
 {
 	// On charge l'image donnée en paramètre (par défaut img.png dans le dossier source) en noir et blanc
-	CommandLineParser parser(argc, argv, "{@image | ../../../../images/lane.jpg | Image sur laquelle on va opérer nos transformations}");
-	Mat image_chargee = imread(parser.get<String>("@image"), IMREAD_GRAYSCALE);
+	Mat image_chargee = imread(emplacement, IMREAD_GRAYSCALE);
 	// On floute un peu l'image pour réduire le bruit
 	Mat image_source;
-	GaussianBlur(image_chargee, image_source, Size(5, 5), 0, 0, BORDER_DEFAULT);
-	//bilateralFilter(image_chargee, image_source, 10, 20, 5);
+	bilateralFilter(image_chargee, image_source, 10, 20, 5);
 	return image_source;
 }
 
-Mat charge_image_hsv(int argc, char** argv)
+Mat charge_image_hsv(string emplacement)
 {
 	// On charge l'image donnée en paramètre du programme dans l'espace de couleur BGR
-	CommandLineParser parser(argc, argv, "{@image | ../../../../images/lenna.jpg | Image sur laquelle on va opérer nos transformations}");
-	Mat image_chargee = imread(parser.get<String>( "@image" ), IMREAD_COLOR);
+	Mat image_chargee = imread(emplacement, IMREAD_COLOR);
 	// On convertit l'image dans l'espace de couleur HSV
 	Mat image_source;
 	cvtColor(image_chargee, image_source, COLOR_BGR2HSV);
