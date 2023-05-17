@@ -59,8 +59,12 @@ void _calcul_table_normes()
 	}
 }
 
-
-
+array<uint8_t, 256> table_seuils; // associe à toutes les intensités possibles le numéro associé
+void _calcul_table_seuils(uint8_t nb_seuils)
+{
+	for(int i = 0; i < 256; ++i)
+		table_seuils.at(i) = i / (256/nb_seuils);
+}
 
 
 
@@ -140,12 +144,87 @@ array<Mat*,2> calcul_contours(Mat* ensembles_X, int nb_seuils)
 	return {contours, orientations};
 }
 
-/*
-array<Mat, 2> calcul_SO_rapide(Mat image, int nb_seuils, int nb_orientations)
-{
+int8_t sobel_kernel_x[25] = {-1, -2, 0, 2, 1, -4, -8, 0, 8, 4, -6, -12, 0, 12, 6, -4, -8, 0, 8, 4, -2, -4, 0, 4, 2};
+int8_t sobel_kernel_y[25] = {-1, -4, -6, -4, -1, -2, -8, -12, -8, -2, 0, 0, 0, 0, 0, 2, 8, 12, 8, 2, 1, 4, 6, 4, 1};
 
+array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientations)
+{
+	Size taille = image.size();
+	int taille_x = taille.width;
+	int taille_y = taille.height;
+	Mat m;
+	// Précalcul: seuils
+	for(int x = 0; x < taille_x; ++x)
+	{
+		for(int y = 0; y < taille_y; ++y)
+		{
+			m.at<uint8_t>(y,x) = table_seuils.at(m.at<uint8_t>(y,x));
+		}
+	}
+
+	copyMakeBorder(image_source, m, 2, 2, 2, 2, BORDER_DEFAULT);
+	int8_t *somme_seuils_x = (int8_t*) calloc(nb_seuils, sizeof(int8_t));
+	int8_t *somme_seuils_y = (int8_t*) calloc(nb_seuils, sizeof(int8_t));
+	uint8_t nb_occurrences_orientation = (uint8_t*) calloc(nb_orientations, sizeof(uint8_t));
+	uint8_t valeur_courante;
+	int8_t gradient_x, gradient_y;
+	uint8_t nb_lignes_courant;
+	uint8_t orientation_max;
+	uint8_t nb_occurences_orientation_max;
+	array<Mat, 2> res;
+	res.at(0) = Mat(taille, CV_8UC1);
+	res.at(1) = Mat(taille, CV_8UC1);
+	for(int x = 0; x < taille_x; ++x)
+	{
+		for(int y = 0; y < taille_y; ++y)
+		{
+			// Récupération des valeurs présentes dans la zone étudiée
+			for(uint8_t dx = 0; dx < 5; ++dx)
+			{
+				for(uint8_t dy = 0; dy < 5; ++dy)
+				{
+					valeur_courante = m.at<uint8_t>(y+dy,x+dx);
+					somme_seuils_x[valeur_courante] += sobel_kernel_x[dy*5+dx];
+					somme_seuils_y[valeur_courante] += sobel_kernel_y[dy*5+dx];
+				}
+			}
+
+			// Calcul des valeurs des dérivées pour chaque seuil, conclusion du nombre de lignes de contour et l'orientation
+			
+			gradient_x = 0;
+			gradient_y = 0;
+			nb_lignes_courant = 0;
+			for(int i = nb_seuils-1; i >= 0; --i)
+			{
+				gradient_x += somme_seuils_x[i];
+				gradient_y += somme_seuils_y[i];
+				somme_seuils_x[i] = 0;
+				somme_seuils_y[i] = 0;
+				nb_occurrences_orientation;
+				nb_lignes_courant += table_normes[(gradient_y+48)*97 + gradient_x + 48];
+				nb_occurrences_orientations[table_normes[(gradient_y+48)*97 + gradient_x + 48]]++;
+			}
+
+			// Détermination de l'orientation majoritaire
+			orientation_majoritaire = 0;
+			nb_occurrences_orientation_maj = 0;
+			for(int i = 0; i < nb_orientations; ++i)
+			{
+				if(nb_occurrences_orientations[i] > nb_occurrences_orientation_maj)
+				{
+					nb_occurrences_orientation_maj = nb_occurrences_orientations[i];
+					orientation_majoritaire = i;
+				}
+				nb_occurrences_orientation[i] = 0;
+			}
+
+			// Conclusion sur la valeur
+			res.at(0) = nb_lignes_courant;
+			res.at(1) = orientation_majoritaire;
+		}
+	}
+	return res;
 }
-*/
 
 
 array<Mat, 2> calcul_S_et_O(Mat* contours, Mat* orientations, int nb_seuils, int nb_orientations)
