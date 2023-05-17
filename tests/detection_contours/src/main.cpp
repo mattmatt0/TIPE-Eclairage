@@ -1,5 +1,4 @@
 #include "detection_contours/detection_contours.hpp"
-#include "outils/constantes.hpp"
 
 int main(int argc, char** argv)
 {	
@@ -40,6 +39,6 @@ int main(int argc, char** argv)
 	Mat resultat = cree_image_orientations(SO.at(0)*10, SO.at(1), NB_SEUILS, NB_ORIENTATIONS);
 	imshow("Resultat", resultat);
 
-	while(waitKeyEx() != 113);
+	attend_q();
 	return 0;
 }

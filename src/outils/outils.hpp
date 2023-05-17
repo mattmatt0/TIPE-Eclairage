@@ -1,11 +1,15 @@
+#pragma once
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
-#include "opencv2/imgproc.hpp"
+#include <opencv2/imgproc.hpp>
 #include <iostream>
+#include <string>
 
 using namespace cv;
 using namespace std;
+
+#include "outils/constantes.hpp"
 
 string type2str(int type) 
 {
@@ -111,3 +115,5 @@ string nombre_taille_fixe(unsigned int nb, size_t taille)
 	reverse(res.begin(), res.end());
 	return res;
 }
+
+void attend_q() { while(waitKeyEx() != TOUCHE_Q); }
