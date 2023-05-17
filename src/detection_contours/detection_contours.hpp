@@ -149,28 +149,28 @@ int8_t sobel_kernel_y[25] = {-1, -4, -6, -4, -1, -2, -8, -12, -8, -2, 0, 0, 0, 0
 
 array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientations)
 {
-	Size taille = image.size();
+	Size taille = image_source.size();
 	int taille_x = taille.width;
 	int taille_y = taille.height;
-	Mat m;
 	// Précalcul: seuils
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			m.at<uint8_t>(y,x) = table_seuils.at(m.at<uint8_t>(y,x));
+			image_source.at<uint8_t>(y,x) = table_seuils.at(image_source.at<uint8_t>(y,x));
 		}
 	}
 
+	Mat m;
 	copyMakeBorder(image_source, m, 2, 2, 2, 2, BORDER_DEFAULT);
 	int8_t *somme_seuils_x = (int8_t*) calloc(nb_seuils, sizeof(int8_t));
 	int8_t *somme_seuils_y = (int8_t*) calloc(nb_seuils, sizeof(int8_t));
-	uint8_t nb_occurrences_orientation = (uint8_t*) calloc(nb_orientations, sizeof(uint8_t));
+	uint8_t *nb_occurrences_orientations = (uint8_t*) calloc(nb_orientations, sizeof(uint8_t));
 	uint8_t valeur_courante;
 	int8_t gradient_x, gradient_y;
 	uint8_t nb_lignes_courant;
-	uint8_t orientation_max;
-	uint8_t nb_occurences_orientation_max;
+	uint8_t orientation_majoritaire;
+	uint8_t nb_occurrences_orientation_maj;
 	array<Mat, 2> res;
 	res.at(0) = Mat(taille, CV_8UC1);
 	res.at(1) = Mat(taille, CV_8UC1);
@@ -184,8 +184,8 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 				for(uint8_t dy = 0; dy < 5; ++dy)
 				{
 					valeur_courante = m.at<uint8_t>(y+dy,x+dx);
-					somme_seuils_x[valeur_courante] += sobel_kernel_x[dy*5+dx];
-					somme_seuils_y[valeur_courante] += sobel_kernel_y[dy*5+dx];
+					somme_seuils_x[valeur_courante] += (int) sobel_kernel_x[dy*5+dx];
+					somme_seuils_y[valeur_courante] += (int) sobel_kernel_y[dy*5+dx];
 				}
 			}
 
@@ -200,9 +200,8 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 				gradient_y += somme_seuils_y[i];
 				somme_seuils_x[i] = 0;
 				somme_seuils_y[i] = 0;
-				nb_occurrences_orientation;
 				nb_lignes_courant += table_normes[(gradient_y+48)*97 + gradient_x + 48];
-				nb_occurrences_orientations[table_normes[(gradient_y+48)*97 + gradient_x + 48]]++;
+				nb_occurrences_orientations[table_orientations[(gradient_y+48)*97 + gradient_x + 48]] += table_normes[(gradient_y+48)*97 + gradient_x + 48];
 			}
 
 			// Détermination de l'orientation majoritaire
@@ -215,12 +214,13 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 					nb_occurrences_orientation_maj = nb_occurrences_orientations[i];
 					orientation_majoritaire = i;
 				}
-				nb_occurrences_orientation[i] = 0;
+				nb_occurrences_orientations[i] = 0;
 			}
 
 			// Conclusion sur la valeur
-			res.at(0) = nb_lignes_courant;
-			res.at(1) = orientation_majoritaire;
+			//if(nb_lignes_courant != 0 || orientation_majoritaire) cout << nb_lignes_courant << " " << orientation_majoritaire << endl;
+			res.at(0).at<uint8_t>(y,x) = nb_lignes_courant;
+			res.at(1).at<uint8_t>(y,x) = orientation_majoritaire;
 		}
 	}
 	return res;

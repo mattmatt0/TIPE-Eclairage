@@ -14,21 +14,28 @@ int main(int argc, char** argv)
 	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
 	_calcul_table_orientations(NB_ORIENTATIONS);
 	_calcul_table_normes();
+	_calcul_table_seuils(NB_SEUILS);
 	string emplacement = parser.get<String>("img-src");
 	string mode = parser.get<string>("mode");
 
 	Mat image_source;
-	array<Mat, 2> SO;
+	Mat image_source1;
+	Mat image_source2;
+	array<Mat, 2> SO1;
+	array<Mat, 2> SO2;
+	
 	if(mode == "rgb")
 	{
-			image_source = chargement_image(emplacement);
-			SO = calcul_SO_NB(image_source, NB_SEUILS, NB_ORIENTATIONS);
+			image_source1 = chargement_image(emplacement);
+			image_source2 = chargement_image(emplacement);
+			SO1 = calcul_SO_rapide(image_source1, NB_SEUILS, NB_ORIENTATIONS);
+			SO2 = calcul_SO_NB(image_source2, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else if(mode == "ect" || mode == "tcs" || mode == "cts")
 	{
 		_calcul_tables_ect();
 		image_source = chargement_image_hsv(emplacement);
-		SO = calcul_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
+		SO1 = calcul_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else
 	{
@@ -36,11 +43,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	
-	cout << "Filtre X:" << endl;
-	affiche_noyau_sobel(1, 0, 5);
-	cout << "Filtre Y:" << endl;
-	affiche_noyau_sobel(0, 1, 5);
-
-	affiche_image_debug(SO.at(0), SO.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours");
+	affiche_image_debug(SO1.at(0), SO1.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours (Rapide)");
+	affiche_image_debug(SO2.at(0), SO2.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours (Ancien)");
 	return 0;
 }
