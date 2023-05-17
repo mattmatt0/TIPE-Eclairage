@@ -29,7 +29,9 @@ int main(int argc, char** argv)
 			image_source1 = chargement_image(emplacement);
 			image_source2 = chargement_image(emplacement);
 			SO1 = calcul_SO_rapide(image_source1, NB_SEUILS, NB_ORIENTATIONS);
+			cout << "Fin du calcul rapide" << endl;
 			SO2 = calcul_SO_NB(image_source2, NB_SEUILS, NB_ORIENTATIONS);
+			cout << "Fin du calcul classique" << endl;
 	}
 	else if(mode == "ect" || mode == "tcs" || mode == "cts")
 	{

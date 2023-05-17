@@ -63,7 +63,7 @@ array<uint8_t, 256> table_seuils; // associe à toutes les intensités possibles
 void _calcul_table_seuils(uint8_t nb_seuils)
 {
 	for(int i = 0; i < 256; ++i)
-		table_seuils.at(i) = i / (256/nb_seuils);
+		table_seuils.at(i) = floor(i / 256.0 * nb_seuils);
 }
 
 
@@ -144,7 +144,7 @@ array<Mat*,2> calcul_contours(Mat* ensembles_X, int nb_seuils)
 	return {contours, orientations};
 }
 
-int8_t sobel_kernel_x[25] = {-1, -2, 0, 2, 1, -4, -8, 0, 8, 4, -6, -12, 0, 12, 6, -4, -8, 0, 8, 4, -2, -4, 0, 4, 2};
+int8_t sobel_kernel_x[25] = {-1, -2, 0, 2, 1, -4, -8, 0, 8, 4, -6, -12, 0, 12, 6, -4, -8, 0, 8, 4, -1, -2, 0, 2, 1};
 int8_t sobel_kernel_y[25] = {-1, -4, -6, -4, -1, -2, -8, -12, -8, -2, 0, 0, 0, 0, 0, 2, 8, 12, 8, 2, 1, 4, 6, 4, 1};
 
 array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientations)
@@ -171,6 +171,7 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 	uint8_t nb_lignes_courant;
 	uint8_t orientation_majoritaire;
 	uint8_t nb_occurrences_orientation_maj;
+	uint16_t pos;
 	array<Mat, 2> res;
 	res.at(0) = Mat(taille, CV_8UC1);
 	res.at(1) = Mat(taille, CV_8UC1);
@@ -184,8 +185,8 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 				for(uint8_t dy = 0; dy < 5; ++dy)
 				{
 					valeur_courante = m.at<uint8_t>(y+dy,x+dx);
-					somme_seuils_x[valeur_courante] += (int) sobel_kernel_x[dy*5+dx];
-					somme_seuils_y[valeur_courante] += (int) sobel_kernel_y[dy*5+dx];
+					somme_seuils_x[valeur_courante] += sobel_kernel_x[dy*5+dx];
+					somme_seuils_y[valeur_courante] += sobel_kernel_y[dy*5+dx];
 				}
 			}
 
@@ -200,8 +201,9 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 				gradient_y += somme_seuils_y[i];
 				somme_seuils_x[i] = 0;
 				somme_seuils_y[i] = 0;
-				nb_lignes_courant += table_normes[(gradient_y+48)*97 + gradient_x + 48];
-				nb_occurrences_orientations[table_orientations[(gradient_y+48)*97 + gradient_x + 48]] += table_normes[(gradient_y+48)*97 + gradient_x + 48];
+				pos = (gradient_y+48)*97 + gradient_x + 48;
+				nb_lignes_courant += table_normes[pos];
+				nb_occurrences_orientations[table_orientations.at(pos)] += table_normes.at(pos);
 			}
 
 			// Détermination de l'orientation majoritaire
