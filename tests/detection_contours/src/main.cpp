@@ -36,9 +36,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	Mat resultat = cree_image_orientations(SO.at(0)*10, SO.at(1), NB_SEUILS, NB_ORIENTATIONS);
-	imshow("Resultat", resultat);
 
-	attend_q();
+	affiche_image_debug(SO.at(0), SO.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours");
 	return 0;
 }

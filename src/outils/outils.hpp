@@ -117,3 +117,15 @@ string nombre_taille_fixe(unsigned int nb, size_t taille)
 }
 
 void attend_q() { while(waitKeyEx() != TOUCHE_Q); }
+
+void affiche_image_debug(Mat amplitude, Mat orientation, int nb_seuils, int nb_orientations, string nom = "Debug Image")
+{
+	imshow(nom, cree_image_orientations(amplitude, orientation, nb_seuils, nb_orientations));
+	attend_q();
+}
+
+void affiche_image_debug(Mat orientation, int nb_orientations, string nom = "Debug Image")
+{
+	imshow(nom, cree_image_orientations(orientation, nb_orientations));
+	attend_q();
+}
