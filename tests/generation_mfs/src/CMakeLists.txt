@@ -1,5 +1,0 @@
-find_package( OpenCV REQUIRED )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-find_package( OpenCV REQUIRED )
-add_executable(GenerationMFS main.cpp)
-target_link_libraries(GenerationMFS ${OpenCV_LIBS} )
