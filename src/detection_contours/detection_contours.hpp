@@ -15,8 +15,8 @@ array<Mat, 3> separe_hsv(Mat image_hsv)
 
 // Tables de valeurs pour accélérer le calcul du MFS CTS
 
-array<int8_t, 256*256> table_tcs_sin;
-array<int8_t, 256*256> table_tcs_cos;
+array<uint8_t, 256*256> table_tcs_sin;
+array<uint8_t, 256*256> table_tcs_cos;
 
 void _calcule_tables_tcs()
 {
@@ -24,8 +24,8 @@ void _calcule_tables_tcs()
 	{
 		for(int j = 0; j < 256; ++j)
 		{
-			table_tcs_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT));
-			table_tcs_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT));
+			table_tcs_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT) / 2.0) + 127;
+			table_tcs_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT) / 2.0) + 127;
 		}
 	}
 }
@@ -88,16 +88,19 @@ Mat *separe_en_seuils(Mat image, int nb_seuils)
 	return ensembles_X;
 }
 
-array<Mat, 3> calcul_TCS(array<Mat, 3> tab_mat)
+array<Mat, 3> calcul_ECT(array<Mat, 3> tab_mat)
 {
-	Mat canal1 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
-	Mat canal2 = Mat::zeros(tab_mat.at(1).size(), CV_8UC1);
-	for (int i = 0; i < canal1.rows; ++i)
+	Size taille = tab_mat.at(1).size();
+	Mat canal1 = Mat(taille, CV_8UC1);
+	Mat canal2 = Mat(taille, CV_8UC1);
+	int taille_X = taille.width;
+	int taille_Y = taille.height;
+	for (int x = 0; x < taille_X; ++x)
 	{
-		for (int j = 0; j < canal1.cols; ++j)
+		for (int y = 0; y < taille_Y; ++y)
 		{
-			canal1.at<int8_t>(i,j) = table_tcs_cos.at(256*tab_mat[0].at<uint8_t>(i,j)+tab_mat[1].at<uint8_t>(i,j));
-			canal2.at<int8_t>(i,j) = table_tcs_sin.at(256*tab_mat[0].at<uint8_t>(i,j)+tab_mat[1].at<uint8_t>(i,j));
+			canal1.at<uint8_t>(y,x) = table_tcs_cos.at(256*tab_mat[0].at<uint8_t>(y,x)+tab_mat[1].at<uint8_t>(y,x));
+			canal2.at<uint8_t>(y,x) = table_tcs_sin.at(256*tab_mat[0].at<uint8_t>(y,x)+tab_mat[1].at<uint8_t>(y,x));
 		}
 	}
 	array<Mat, 3> res = {canal1, canal2, tab_mat.at(2)};
@@ -190,7 +193,7 @@ array<Mat, 2> calcul_S_et_O(Mat* contours, Mat* orientations, int nb_seuils, int
 }
 
 
-array<Mat, 2> synthese_S_O_CTS(array<Mat, 3> ensembles_S, array<Mat, 3> ensembles_O)
+array<Mat, 2> synthese_S_O_ECT(array<Mat, 3> ensembles_S, array<Mat, 3> ensembles_O)
 {
 	// Calcule S et O à partir des différentes valeurs de S et O calculées dans chacun des 3 canaux passés en paramètres.
 	Size taille = ensembles_S.at(0).size();
@@ -231,9 +234,9 @@ array<Mat, 2> calcule_SO_NB(Mat source, int nb_seuils, int nb_orientations)
 	return res;
 }
 
-array<Mat, 2> calcule_SO_CTS(Mat source, int nb_seuils, int nb_orientations)
+array<Mat, 2> calcule_SO_ECT(Mat source, int nb_seuils, int nb_orientations)
 {
-	array<Mat, 3> canaux = separe_hsv(source);
+	array<Mat, 3> canaux = calcul_ECT(separe_hsv(source));
 	array<Mat, 3> ensembles_O;
 	array<Mat, 3> ensembles_S;
 	array<Mat, 2> ensemble_SO;
@@ -243,5 +246,5 @@ array<Mat, 2> calcule_SO_CTS(Mat source, int nb_seuils, int nb_orientations)
 		ensembles_S.at(i) = ensemble_SO.at(0);
 		ensembles_O.at(i) = ensemble_SO.at(1);
 	}
-	return synthese_S_O_CTS(ensembles_S, ensembles_O);
+	return synthese_S_O_ECT(ensembles_S, ensembles_O);
 }
