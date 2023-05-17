@@ -25,15 +25,15 @@ int main(int argc, char** argv)
 			image_source = charge_image(emplacement);
 			SO = calcule_SO_NB(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
-	else if(mode == "tcs")
+	else if(mode == "ect")
 	{
-		_calcule_tables_tcs();
+		_calcule_tables_ect();
 		image_source = charge_image_hsv(emplacement);
 		SO = calcule_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else
 	{
-		cout << "Erreur: mode invalide (ce doit être \"tcs\" ou \"rgb\")" << endl;
+		cout << "Erreur: mode invalide (ce doit être \"ect\" ou \"rgb\")" << endl;
 		return 1;
 	}
 

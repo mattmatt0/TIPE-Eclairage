@@ -1,10 +1,7 @@
 #include "outils/outils.hpp"
 #include "outils/constantes.hpp"
 
-string const params = params_generiques + params_image + params_analyse + "{mode | rgb | Espace colorimétrique à utiliser: soit tcs (Texton Color Space), soit rgb}";
-
-// Coder fonction pour le calcul de Texton Color Space (TCS)
-// Définir un nouveau type struct pour renvoyer les 3 canaux
+string const params = params_generiques + params_image + params_analyse + "{mode | rgb | Espace colorimétrique à utiliser: soit ect (Espace de Couleur Texton), soit rgb}";
 
 array<Mat, 3> separe_hsv(Mat image_hsv)
 {
@@ -13,19 +10,19 @@ array<Mat, 3> separe_hsv(Mat image_hsv)
 	return canaux;
 }
 
-// Tables de valeurs pour accélérer le calcul du MFS CTS
+// Tables de valeurs pour accélérer le calcul de l'espace de couleur texton (ECT)
 
-array<uint8_t, 256*256> table_tcs_sin;
-array<uint8_t, 256*256> table_tcs_cos;
+array<uint8_t, 256*256> table_ect_sin;
+array<uint8_t, 256*256> table_ect_cos;
 
-void _calcule_tables_tcs()
+void _calcule_tables_ect()
 {
 	for(int i = 0; i < 256; ++i)
 	{
 		for(int j = 0; j < 256; ++j)
 		{
-			table_tcs_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT) / 2.0) + 127;
-			table_tcs_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT) / 2.0) + 127;
+			table_ect_sin.at(256*i+j) = floor(i * sin(float(j) * RAD_PAR_OCT) / 2.0) + 127;
+			table_ect_cos.at(256*i+j) = floor(i * cos(float(j) * RAD_PAR_OCT) / 2.0) + 127;
 		}
 	}
 }
@@ -99,8 +96,8 @@ array<Mat, 3> calcul_ECT(array<Mat, 3> tab_mat)
 	{
 		for (int y = 0; y < taille_Y; ++y)
 		{
-			canal1.at<uint8_t>(y,x) = table_tcs_cos.at(256*tab_mat[0].at<uint8_t>(y,x)+tab_mat[1].at<uint8_t>(y,x));
-			canal2.at<uint8_t>(y,x) = table_tcs_sin.at(256*tab_mat[0].at<uint8_t>(y,x)+tab_mat[1].at<uint8_t>(y,x));
+			canal1.at<uint8_t>(y,x) = table_ect_cos.at(256*tab_mat[0].at<uint8_t>(y,x)+tab_mat[1].at<uint8_t>(y,x));
+			canal2.at<uint8_t>(y,x) = table_ect_sin.at(256*tab_mat[0].at<uint8_t>(y,x)+tab_mat[1].at<uint8_t>(y,x));
 		}
 	}
 	array<Mat, 3> res = {canal1, canal2, tab_mat.at(2)};
