@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 	std::cout << "Calcul pour " << NB_ORIENTATIONS << "orientations" << endl;
 	int const T = parser.get<int>("tau");
 	int nb_images = parser.get<int>("nb-img");
-	string rep_source = parser.get<String>("rep-source");
+	string rep_source = parser.get<String>("rep-src");
 	string rep_dest = parser.get<String>("rep-dest");
 	string extension = parser.get<String>("extension");
 
@@ -42,7 +42,6 @@ int main(int argc, char** argv)
 		Mat D = calcule_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
 		Mat disp_imgO = cree_image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
 		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_imgO);
-		cout << rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension << endl;
 	}
 	return 0;
 
