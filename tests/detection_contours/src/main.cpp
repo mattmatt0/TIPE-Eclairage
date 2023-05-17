@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 			image_source = charge_image(emplacement);
 			SO = calcule_SO_NB(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
-	else if(mode == "ect")
+	else if(mode == "ect" || mode == "tcs" || mode == "cts")
 	{
 		_calcule_tables_ect();
 		image_source = charge_image_hsv(emplacement);
