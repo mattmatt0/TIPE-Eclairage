@@ -62,16 +62,38 @@ void _calcul_table_normes()
 array<uint8_t, 256> table_seuils; // associe à toutes les intensités possibles le numéro associé
 void _calcul_table_seuils(uint8_t nb_seuils)
 {
-	int p = 0;
 	int pas = 255/nb_seuils;
-	for(int i = 0; i < 256; ++i)
+	int i = pas;
+	for(int p = 0; p < nb_seuils; ++p)
 	{
-		if(i > (p+1)*pas)
+		while(i <= (p+2)*pas)
 		{
-			++p;
+			table_seuils.at(i) = p;
+			++i;
 		}
-		table_seuils.at(i) = p;
 	}
+	for(; i < 256; ++i) table_seuils.at(i) = nb_seuils-1;
+}
+
+Mat *_seuils_rapide(Mat m, uint8_t nb_seuils)
+{
+	Size taille = m.size();
+	int taille_x = taille.width;
+	int taille_y = taille.height;
+	Mat *res = new Mat[nb_seuils];
+	for(int i = 0; i < nb_seuils; ++i) res[i] = Mat::zeros(taille, CV_8UC1);
+	// Précalcul: seuils
+	for(int x = 0; x < taille_x; ++x)
+	{
+		for(int y = 0; y < taille_y; ++y)
+		{
+			for(int i = 0; i <= table_seuils.at(m.at<uint8_t>(y,x)); ++i)
+			{
+				res[i].at<uint8_t>(y,x) = 1;
+			}
+		}
+	}
+	return res;
 }
 
 void _calcul_table_seuils_moderne(uint8_t nb_seuils)
@@ -81,17 +103,10 @@ void _calcul_table_seuils_moderne(uint8_t nb_seuils)
 }
 
 
-
-
-
-
-
 Mat *seuils(Mat image, int nb_seuils)
 {
 	// Séparation des pixels selon différent seuils
 	int pas = 255/nb_seuils;
-	int seuils[nb_seuils];
-
 	Mat *ensembles_X = new Mat[nb_seuils];
 
 	for(int i = 0; i < nb_seuils; ++i)
