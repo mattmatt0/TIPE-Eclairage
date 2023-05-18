@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
 	_calcul_table_orientations(NB_ORIENTATIONS);
 	_calcul_table_normes();
-	_calcul_table_seuils(NB_SEUILS);
+	_calcul_table_seuils_moderne(NB_SEUILS);
 
 	vector<Mat> images = chargement_repertoire_images(rep_source, extension, nb_images);
 	vector<Mat> ensembles_O, ensembles_S;
@@ -42,12 +42,14 @@ int main(int argc, char** argv)
 	int touche;
 	cout << "Calcul de l'espace de caractéristiques de mouvement (ECM)..." << endl;
 	cout << "Format de la forme: " << rep_dest+"/"+nombre_taille_fixe(0, 5)+"."+extension << endl;
-	for(int t = 0; t + T < ensembles_O.size(); ++t)
+	for(int t = T; t < ensembles_O.size(); ++t)
 	{
 
-		Mat D = calcul_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/2);
-		Mat disp_imgO = image_orientations(D*255, ensembles_O.at(t+T), NB_SEUILS, 1);
-		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_imgO);
+		Mat D = calcul_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/8);
+		Mat disp_img = image_orientations(D*255, ensembles_O.at(t), NB_SEUILS, NB_ORIENTATIONS);
+		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_img);
+		//imshow("Ensemble detecte", disp_img);
+		//attend_q();
 	}
 	cout << "Terminé ! " << endl;
 	return 0;

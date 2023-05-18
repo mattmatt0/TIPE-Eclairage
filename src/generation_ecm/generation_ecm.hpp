@@ -9,23 +9,20 @@ Mat calcul_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int
 	int taille_x = taille.width;
 	int taille_y = taille.height;
 
-	Mat res = Mat::zeros(taille, CV_8UC1);
+	Mat res = Mat(taille, CV_8UC1, 1);
 	
 	// Puis on vérifie la stabilité des orientations
-	for(int x = 0; x < taille_x; ++x)
+	for(int x = 0; x < taille_x; ++x) 
+	for(int y = 0; y < taille_y; ++y) 
+	for(int i = t-T; i < t; ++i)
 	{
-		for(int y = 0; y < taille_y; ++y)
+		if(ensembles_S.at(i).at<uint8_t>(y,x) > 4 && 
+			abs((ensembles_O.at(i).at<uint8_t>(y,x)-ensembles_O.at(t-T).at<uint8_t>(y,x))%nb_orientations) > 1)
 		{
-			for(int i = t+1; i < t+T; ++i)
-			{
-				if(abs((int8_t) ensembles_O.at(t).at<uint8_t>(y,x) - (int8_t)ensembles_O.at(i).at<uint8_t>(y,x)) >= 5)
-				{
-					res.at<uint8_t>(y,x) = 1;
-					break;
-				}
-			}
+			res.at<uint8_t>(y,x) = 0;
 		}
 	}
+	//imshow("R", res*255);
 	return res;
 }
 
@@ -45,14 +42,12 @@ Mat calcul_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			if(ensembles_S.at(t+T).at<uint8_t>(y,x) >= seuil)
+			if(R.at<uint8_t>(y,x) == 0 || abs(R.at<uint8_t>(y,x) - ensembles_O.at(t).at<uint8_t>(y,x)) > 2)
 			{
-				if(R.at<uint8_t>(y,x) == 0 || abs((int8_t) R.at<uint8_t>(y,x) - (int8_t) ensembles_O.at(t+T).at<uint8_t>(y,x)) > 1)
-				{
-					res.at<uint8_t>(y,x) = 1;
-				}
+				res.at<uint8_t>(y,x) = 1;
 			}
 		}
 	}
+	//imshow("D", res*255);
 	return res;
 }
