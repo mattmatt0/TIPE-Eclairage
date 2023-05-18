@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
 	_calcul_table_orientations(NB_ORIENTATIONS);
 	_calcul_table_normes();
-	_calcul_table_seuils(NB_SEUILS);
+	_calcul_table_seuils_moderne(NB_SEUILS);
 	string emplacement = parser.get<String>("img-src");
 	string mode = parser.get<string>("mode");
 
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 			image_source2 = chargement_image(emplacement);
 			SO1 = calcul_SO_rapide(image_source1, NB_SEUILS, NB_ORIENTATIONS);
 			cout << "Fin du calcul rapide" << endl;
-			SO2 = calcul_SO_NB(image_source2, NB_SEUILS, NB_ORIENTATIONS);
+			//SO2 = calcul_SO_NB(image_source2, NB_SEUILS, NB_ORIENTATIONS);
 			cout << "Fin du calcul classique" << endl;
 	}
 	else if(mode == "ect" || mode == "tcs" || mode == "cts")
@@ -45,7 +45,11 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	
+	cout << "Pas encore crash" << endl;
 	affiche_image_debug(SO1.at(0), SO1.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours (Rapide)");
 	affiche_image_debug(SO2.at(0), SO2.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours (Ancien)");
+	imshow("Difference S", abs(SO1.at(0)-SO2.at(0))*255);
+	imshow("Difference O", abs(SO1.at(1)-SO2.at(1))*255);
+	attend_q();
 	return 0;
 }

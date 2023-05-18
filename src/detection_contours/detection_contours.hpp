@@ -62,8 +62,22 @@ void _calcul_table_normes()
 array<uint8_t, 256> table_seuils; // associe à toutes les intensités possibles le numéro associé
 void _calcul_table_seuils(uint8_t nb_seuils)
 {
+	int p = 0;
+	int pas = 255/nb_seuils;
 	for(int i = 0; i < 256; ++i)
-		table_seuils.at(i) = floor(i / 256.0 * nb_seuils);
+	{
+		if(i > (p+1)*pas)
+		{
+			++p;
+		}
+		table_seuils.at(i) = p;
+	}
+}
+
+void _calcul_table_seuils_moderne(uint8_t nb_seuils)
+{
+	for(int i = 0; i < 256; ++i)
+		table_seuils.at(i) = floor(i/256.0 * nb_seuils);
 }
 
 
@@ -185,6 +199,7 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 				for(uint8_t dy = 0; dy < 5; ++dy)
 				{
 					valeur_courante = m.at<uint8_t>(y+dy,x+dx);
+					assert(valeur_courante < nb_seuils && valeur_courante >= 0);
 					somme_seuils_x[valeur_courante] += sobel_kernel_x[dy*5+dx];
 					somme_seuils_y[valeur_courante] += sobel_kernel_y[dy*5+dx];
 				}
@@ -203,6 +218,7 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 				somme_seuils_y[i] = 0;
 				pos = (gradient_y+48)*97 + gradient_x + 48;
 				nb_lignes_courant += table_normes[pos];
+				assert(97*97 > pos && pos >= 0);
 				nb_occurrences_orientations[table_orientations.at(pos)] += table_normes.at(pos);
 			}
 
@@ -225,6 +241,9 @@ array<Mat, 2> calcul_SO_rapide(Mat image_source, int nb_seuils, int nb_orientati
 			res.at(1).at<uint8_t>(y,x) = orientation_majoritaire;
 		}
 	}
+	free(somme_seuils_x);
+	free(somme_seuils_y);
+	free(nb_occurrences_orientations);
 	return res;
 }
 
