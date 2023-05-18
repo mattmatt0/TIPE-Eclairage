@@ -107,7 +107,7 @@ string nombre_taille_fixe(unsigned int nb, size_t taille)
 	string res = "";
 	while(nb != 0)
 	{
-		res += ((char) nb % 10 + 48);
+		res += (char) (nb % 10 + 48);
 		--taille;
 		nb /= 10;
 	}
