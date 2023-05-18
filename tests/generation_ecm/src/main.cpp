@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {	
-	CommandLineParser parser(argc, argv, params_generiques+params_analyse+params_images+param_sauvegarde_dossier);
+	CommandLineParser parser(argc, argv, params_generiques+params_analyse+params_images+param_sauvegarde_dossier+"{affiche-progres a || Affiche la progression du traitement}{mode-res | nb | Indiquer 'nb' pour sauvegarder uniquement la valeur de D, 'couleur' pour indiquer aussi l'orientation associée}");
 	if(parser.has("help"))
 	{
 		parser.printMessage();
@@ -17,6 +17,8 @@ int main(int argc, char** argv)
 	string rep_source = parser.get<String>("rep-src");
 	string rep_dest = parser.get<String>("rep-dest");
 	string extension = parser.get<String>("extension");
+	bool progression = parser.has("affiche-progres");
+	bool ajoute_orientation = (parser.get<String>("mode-res") == "couleur");
 
 	_calcul_table_orientations(NB_ORIENTATIONS);
 	_calcul_table_normes();
@@ -26,32 +28,43 @@ int main(int argc, char** argv)
 	vector<Mat> ensembles_O, ensembles_S;
 	nb_images = images.size();
 
-	cout << "Calcul des contours..." << endl;
-	for(int i = 0; i < nb_images; ++i)
+	if(progression)
 	{
-		array<Mat, 2> SO = calcul_SO_rapide(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
-		ensembles_S.push_back(SO.at(0));
-		ensembles_O.push_back(SO.at(1));
-		if((i & 7) == 7)
+		cout << "Calcul des contours..." << endl;
+		for(int i = 0; i < nb_images; ++i)
 		{
+			array<Mat, 2> SO = calcul_SO_rapide(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
+			ensembles_S.push_back(SO.at(0));
+			ensembles_O.push_back(SO.at(1));
 			cout << i+1 << " images traitées sur " << nb_images << endl;
 		}
+		cout << "Calcul des contours terminé !" << endl;
+		cout << "Calcul de l'espace de caractéristiques de mouvement (ECM)..." << endl;
+		cout << "Format de la forme: " << rep_dest+"/"+nombre_taille_fixe(0, 5)+"."+extension << endl;
 	}
-	cout << "Calcul des contours terminé !" << endl;
+	else
+	{
+		for(int i = 0; i < nb_images; ++i)
+		{
+			array<Mat, 2> SO = calcul_SO_rapide(images.at(i), NB_SEUILS, NB_ORIENTATIONS);
+			ensembles_S.push_back(SO.at(0));
+			ensembles_O.push_back(SO.at(1));
+		}
+	}
 
 	int touche;
-	cout << "Calcul de l'espace de caractéristiques de mouvement (ECM)..." << endl;
-	cout << "Format de la forme: " << rep_dest+"/"+nombre_taille_fixe(0, 5)+"."+extension << endl;
+	
 	for(int t = T; t < ensembles_O.size(); ++t)
 	{
-
 		Mat D = calcul_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/8);
-		Mat disp_img = image_orientations(D*255, ensembles_O.at(t), NB_SEUILS, NB_ORIENTATIONS);
-		imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_img);
-		//imshow("Ensemble detecte", disp_img);
-		//attend_q();
+		if(ajoute_orientation)
+		{
+			Mat disp_img = image_orientations(D*255, ensembles_O.at(t), NB_SEUILS, NB_ORIENTATIONS);
+			imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_img);
+		}
+		else imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, D*255);
 	}
-	cout << "Terminé ! " << endl;
+	if(progression) cout << "Terminé ! " << endl;
 	return 0;
 
 }
