@@ -32,18 +32,28 @@ string type2str(int type)
 	return r;
 }
 
-vector<Mat> chargement_repertoire_images(string repertoire, string extension, int limite = -1)
+vector<Mat> chargement_repertoire_images(string repertoire, string extension, int limite = -1, vector<string>* noms_fichiers = NULL)
 {
 	// Charge toutes les images dans `repertoire` avec l'extension `extension`
 	// `repertoire` ne doit pas comporter de "/" à la fin.
 	// `extension` ne doit pas comporter de "." au début
-	vector<cv::String> emplacements;
+	vector<string> emplacements;
 	cout << "Chargement des images d'emplacement " << repertoire + "/*." + extension << endl;
 	glob(repertoire + "/*." + extension, emplacements, false);
+	
 
 	vector<Mat> images;
 	int nb_images = (limite == -1) ? emplacements.size() : limite; 
 	Mat image_courante;
+
+	if(noms_fichiers)
+	{
+		int taille_prefixe = repertoire.size()+1;
+		for(int i = 0; i < nb_images; ++i)
+		{
+			noms_fichiers->push_back(emplacements.at(i).substr(taille_prefixe, string::npos));
+		}
+	}
 
 	for(int i = 0; i < nb_images; ++i)
 	{

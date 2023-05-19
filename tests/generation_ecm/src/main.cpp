@@ -24,7 +24,8 @@ int main(int argc, char** argv)
 	_calcul_table_normes();
 	_calcul_table_seuils_moderne(NB_SEUILS);
 
-	vector<Mat> images = chargement_repertoire_images(rep_source, extension, nb_images);
+	vector<string> *noms_fichiers = new vector<string>;
+	vector<Mat> images = chargement_repertoire_images(rep_source, extension, nb_images, noms_fichiers);
 	vector<Mat> ensembles_O, ensembles_S;
 	nb_images = images.size();
 
@@ -60,9 +61,9 @@ int main(int argc, char** argv)
 		if(ajoute_orientation)
 		{
 			Mat disp_img = image_orientations(D*255, ensembles_O.at(t), NB_SEUILS, NB_ORIENTATIONS);
-			imwrite(rep_dest+"/"+nombre_taille_fixe(t, 4)+"."+extension, disp_img);
+			imwrite(rep_dest+"/"+noms_fichiers->at(t), disp_img);
 		}
-		else imwrite(rep_dest+"/"+nombre_taille_fixe(t, 4)+"."+extension, D*255);
+		else imwrite(rep_dest+"/"+noms_fichiers->at(t), D*255);
 	}
 	if(progression) cout << "Terminé ! " << endl;
 	return 0;
