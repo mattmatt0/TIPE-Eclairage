@@ -60,9 +60,9 @@ int main(int argc, char** argv)
 		if(ajoute_orientation)
 		{
 			Mat disp_img = image_orientations(D*255, ensembles_O.at(t), NB_SEUILS, NB_ORIENTATIONS);
-			imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, disp_img);
+			imwrite(rep_dest+"/"+nombre_taille_fixe(t, 4)+"."+extension, disp_img);
 		}
-		else imwrite(rep_dest+"/"+nombre_taille_fixe(t, 5)+"."+extension, D*255);
+		else imwrite(rep_dest+"/"+nombre_taille_fixe(t, 4)+"."+extension, D*255);
 	}
 	if(progression) cout << "Terminé ! " << endl;
 	return 0;
