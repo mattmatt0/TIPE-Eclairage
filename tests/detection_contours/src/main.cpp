@@ -19,25 +19,18 @@ int main(int argc, char** argv)
 	string mode = parser.get<string>("mode");
 
 	Mat image_source;
-	Mat image_source1;
-	Mat image_source2;
-	array<Mat, 2> SO1;
-	array<Mat, 2> SO2;
+	array<Mat, 2> SO;
 	
 	if(mode == "rgb")
 	{
-			image_source1 = chargement_image(emplacement);
-			image_source2 = chargement_image(emplacement);
-			SO1 = calcul_SO_rapide(image_source1, NB_SEUILS, NB_ORIENTATIONS);
-			cout << "Fin du calcul rapide" << endl;
-			SO2 = calcul_SO_NB(image_source2, NB_SEUILS, NB_ORIENTATIONS);
-			cout << "Fin du calcul classique" << endl;
+			image_source = chargement_image(emplacement);
+			SO = calcul_SO_rapide(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else if(mode == "ect" || mode == "tcs" || mode == "cts")
 	{
 		_calcul_tables_ect();
 		image_source = chargement_image_hsv(emplacement);
-		SO1 = calcul_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
+		SO = calcul_SO_ECT(image_source, NB_SEUILS, NB_ORIENTATIONS);
 	}
 	else
 	{
@@ -45,8 +38,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	
-	affiche_image_debug(SO1.at(0), SO1.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours (Rapide)");
-	affiche_image_debug(SO2.at(0), SO2.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours (Ancien)");
+	affiche_image_debug(SO.at(0), SO.at(1), NB_SEUILS, NB_ORIENTATIONS, "Contours");
 	attend_q();
 	return 0;
 }
