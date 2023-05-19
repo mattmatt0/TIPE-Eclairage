@@ -66,7 +66,7 @@ void _calcul_table_seuils(uint8_t nb_seuils)
 	int i = pas;
 	for(int p = 0; p < nb_seuils; ++p)
 	{
-		while(i <= (p+2)*pas)
+		while(i <= (p+2)*pas && i < 256)
 		{
 			table_seuils.at(i) = p;
 			++i;
