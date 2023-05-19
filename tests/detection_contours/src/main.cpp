@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	int const NB_ORIENTATIONS = parser.get<int>("nb-orientations");
 	_calcul_table_orientations(NB_ORIENTATIONS);
 	_calcul_table_normes();
-	_calcul_table_seuils(NB_SEUILS);
+	_calcul_table_seuils_moderne(NB_SEUILS);
 	string emplacement = parser.get<String>("img-src");
 	string mode = parser.get<string>("mode");
 
