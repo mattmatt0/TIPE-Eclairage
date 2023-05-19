@@ -1,8 +1,8 @@
-#include "training/training.hpp"
 #include "opencv2/objdetect.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/videoio.hpp"
+#include "outils/outils.hpp"
 
 string const settings_images = "{rep-src | ../../../../images/test_ecm | Dossier contenant la séquence à analyser}{extension | png | Extension des images à rechercher}{nb-img | -1 | Nombre d'images à charger}";
 string const settings_classifieur = "{model | ../../../images/trained1/cascade.xml | Fichier du modèle du classifieur}";
