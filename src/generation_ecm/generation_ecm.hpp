@@ -42,7 +42,7 @@ Mat calcul_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int
 	{
 		for(int y = 0; y < taille_y; ++y)
 		{
-			if(R.at<uint8_t>(y,x) == 0 || abs(R.at<uint8_t>(y,x) - ensembles_O.at(t).at<uint8_t>(y,x)) > 2)
+			if(R.at<uint8_t>(y,x) == 0 && abs(ensembles_O.at(t-1).at<uint8_t>(y,x) - ensembles_O.at(t).at<uint8_t>(y,x)) > 2)
 			{
 				res.at<uint8_t>(y,x) = 1;
 			}

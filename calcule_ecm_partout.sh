@@ -8,5 +8,5 @@ do NOM_REPERTOIRE=$(cut -f 3 -d "/" <(echo $dir));
 mkdir -p images/resultats/$NOM_REPERTOIRE
 rm -f images/resultats/$NOM_REPERTOIRE/*.png
 echo Conversion de $NOM_REPERTOIRE ...
-tests/generation_ecm/build/src/GenerationECM --rep-src=images/sources/$NOM_REPERTOIRE --extension=png --rep-dest=images/resultats/$NOM_REPERTOIRE -a --nb-seuils=128 --nb-orientations=4
+tests/generation_ecm/build/src/GenerationECM --rep-src=images/sources/$NOM_REPERTOIRE --extension=png --rep-dest=images/resultats/$NOM_REPERTOIRE -a --nb-seuils=128 --nb-orientations=4 --mode-res=couleur
 done
