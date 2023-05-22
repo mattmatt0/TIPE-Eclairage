@@ -95,10 +95,10 @@ Mat image_orientations(Mat amplitude, Mat orientation, int nb_seuils, int nb_ori
 	amplitude.convertTo(amplitude_f, CV_32FC1);
 	orientation_f *= 180.0/nb_orientations;
 	amplitude_f *= 256.0/nb_seuils;
-	orientation_f.convertTo(orientation, CV_8UC1);
-	amplitude_f.convertTo(amplitude, CV_8UC1);
+	orientation_f.convertTo(orientation_f, CV_8UC1);
+	amplitude_f.convertTo(amplitude_f, CV_8UC1);
 	Mat res;
-	merge(array<Mat, 3>({orientation, Mat(orientation.size(), CV_8UC1, 255), amplitude}), res);
+	merge(array<Mat, 3>({orientation_f, Mat(orientation.size(), CV_8UC1, 255), amplitude_f}), res);
 	cvtColor(res, res, COLOR_HSV2BGR);
 	return res;
 }
