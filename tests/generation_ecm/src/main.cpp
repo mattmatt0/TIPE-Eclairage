@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 	
 	for(int t = T; t < ensembles_O.size(); ++t)
 	{
-		Mat D = calcul_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/8);
+		Mat D = calcul_D(ensembles_O, ensembles_S, t, T, NB_ORIENTATIONS, NB_SEUILS/32);
 		if(ajoute_orientation)
 		{
 			Mat disp_img = image_orientations(D*255, ensembles_O.at(t), NB_SEUILS, NB_ORIENTATIONS);
