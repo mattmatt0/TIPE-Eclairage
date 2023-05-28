@@ -16,8 +16,8 @@ array<Mat, 2> calcule_bdf(Mat m)
 				{
 					if(0 <= x+dx < tailleX && 0 <= y+dy < tailleY)
 					{
-						resX.at<uint8_t>(y,x) += floor(dx/((dx*dx + dy*dy)*sqrt(dx*dx + dy*dy)));
-						resY.at<uint8_t>(y,x) += floor(dy/((dx*dx + dy*dy)*sqrt(dx*dx + dy*dy)));
+						resX.at<uint8_t>(y,x) += floor(64.0*dx/((dx*dx + dy*dy)*sqrt(dx*dx + dy*dy)));
+						resY.at<uint8_t>(y,x) += floor(64.0*dy/((dx*dx + dy*dy)*sqrt(dx*dx + dy*dy)));
 					}
 				}
 			}

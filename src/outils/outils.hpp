@@ -150,3 +150,20 @@ void affiche_noyau_sobel(int ordre_x, int ordre_y, int taille)
 	noyau_y.convertTo(noyau_entier_y, CV_32SC1);
 	cout << noyau_y*noyau_x.t()<< endl;
 }
+
+void affiche_image_signee(string titre = "Image debug", Mat m)
+{
+	Mat disp_img = Mat(m.size(), CV_8UC3);
+	for(int x = 0; x < m.size().width; ++x)
+	{
+		for(int y = 0; y < m.size().height; ++y)
+		{
+			if(m.at<int8_t>(y,x) < 0)
+				disp_img.at<Vec3b>(y,x) = Vec3b(0,0,-m.at<int8_t>(y,x));
+			else
+				disp_img.at<Vec3b>(y,x) = Vec3b(0, m.at<int8_t>(y,x), 0);
+		}
+	}
+	imshow(titre, disp_img);
+	attend_q();
+}
