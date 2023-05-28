@@ -39,6 +39,7 @@ Mat calcul_D(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int
 	
 	Mat res = Mat::zeros(taille, CV_8UC1);
 	Mat R = calcul_R(ensembles_O, ensembles_S, t, T, nb_orientations);
+	Mat disp_R;
 	for(int x = 0; x < taille_x; ++x)
 	{
 		for(int y = 0; y < taille_y; ++y)
