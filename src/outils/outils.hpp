@@ -151,7 +151,7 @@ void affiche_noyau_sobel(int ordre_x, int ordre_y, int taille)
 	cout << noyau_y*noyau_x.t()<< endl;
 }
 
-void affiche_image_signee(string titre = "Image debug", Mat m)
+void affiche_image_signee(string titre, Mat m)
 {
 	Mat disp_img = Mat(m.size(), CV_8UC3);
 	for(int x = 0; x < m.size().width; ++x)
