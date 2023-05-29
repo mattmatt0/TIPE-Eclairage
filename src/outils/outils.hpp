@@ -150,3 +150,45 @@ void affiche_noyau_sobel(int ordre_x, int ordre_y, int taille)
 	noyau_y.convertTo(noyau_entier_y, CV_32SC1);
 	cout << noyau_y*noyau_x.t()<< endl;
 }
+
+
+Mat precalcul_integral(Mat image_source)
+{
+	// Hyp : image_source est en noir et blanc (0 ou 255)
+	// Renvoie la matrice avec les valeurs précalculées pour le calcul d'image intégrale
+	int n = image_source.rows;
+	int m = image_source.cols;
+	Mat image_integrale = Mat::zeros(n, m, CV_32F);
+	
+	for (int i = 0; i < n; ++i)
+	{
+		image_integrale.at<int>(i,0) = image_source.at<int>(i,0);
+	} 
+
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 1; j < m; ++j)
+		{
+			image_integrale.at<int>(i,j) = image_source.at<int>(i,j) + image_integrale.at<int>(i,j-1);
+		}
+	}
+
+	for (int j = 0; j < m; ++j)
+	{
+		for (int i = 1; i < n; ++i)
+		{
+			image_integrale.at<int>(i,j) = image_integrale.at<int>(i,j) + image_integrale.at<int>(i-1,j);
+		}
+	}
+
+	return image_integrale;
+}
+
+
+int calcul_integral(Mat image_source, int x1, int y1, int x2, int y2)
+{
+	// Calcul image intégrale dans le rectangle de coin supérieur gauche (x1,y1) et de coin inférieur droit (x2,y2)
+	Mat image_integrale = precalcul_integral(image_source);
+	int res = image_integrale.at<int>(x2,y2) - image_integrale.at<int>(x1,y2) - image_integrale.at<int>(x2,y1) + image_integrale.at<int>(x1,y1);
+	return res;
+}
