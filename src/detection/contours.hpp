@@ -1,3 +1,4 @@
+#pragma once
 #include "outils/outils.hpp"
 
 string const params = params_generiques + params_image + params_analyse + "{mode | rgb | Espace colorimétrique à utiliser: soit ect (Espace de Couleur Texton), soit rgb}";

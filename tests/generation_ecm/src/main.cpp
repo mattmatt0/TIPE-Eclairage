@@ -1,3 +1,4 @@
+#include "detection/contours.hpp"
 #include "generation_ecm/generation_ecm.hpp"
 #include "outils/constantes.hpp"
 

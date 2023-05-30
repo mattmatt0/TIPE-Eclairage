@@ -1,4 +1,4 @@
-#include "detection_contours/detection_contours.hpp"
+#include "detection/contours.hpp"
 
 int main(int argc, char** argv)
 {	

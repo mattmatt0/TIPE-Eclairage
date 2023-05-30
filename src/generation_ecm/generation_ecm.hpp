@@ -1,4 +1,4 @@
-#include "detection_contours/detection_contours.hpp"
+#pragma once
 
 Mat calcul_R(vector<Mat> ensembles_O, vector<Mat> ensembles_S, int t, int T, int nb_orientations)
 {

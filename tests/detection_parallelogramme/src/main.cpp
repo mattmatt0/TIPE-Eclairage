@@ -1,6 +1,6 @@
 #include "outils/outils.hpp"
-#include "detection_parallelogrammes/parallelogramme.hpp"
 #include "outils/constantes.hpp"
+#include "detection/parallelogrammes.hpp"
 
 int main(int argc, char** argv)
 {	

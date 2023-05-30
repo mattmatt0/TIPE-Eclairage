@@ -1,3 +1,4 @@
+#pragma once
 #include "outils/outils.hpp"
 
 Mat canny(Mat image_input, double threshold1, double threshold2)
