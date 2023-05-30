@@ -156,30 +156,21 @@ Mat precalcul_integral(Mat image_source)
 {
 	// Hyp : image_source est en noir et blanc (0 ou 255)
 	// Renvoie la matrice avec les valeurs précalculées pour le calcul d'image intégrale
-	int n = image_source.rows;
-	int m = image_source.cols;
-	Mat image_integrale = Mat::zeros(n, m, CV_32F);
+	Size taille = image_source.size();
+	int tailleX = taille.width;
+	int tailleY = taille.height;
+	Mat image_integrale = Mat::zeros(taille, CV_16UC1);
 	
-	for (int i = 0; i < n; ++i)
-	{
-		image_integrale.at<int>(i,0) = image_source.at<int>(i,0);
-	} 
+	for (int y = 0; y < tailleY; ++y)
+		image_integrale.at<uint16_t>(y,0) = image_source.at<uint16_t>(y,0);
 
-	for (int i = 0; i < n; ++i)
-	{
-		for (int j = 1; j < m; ++j)
-		{
-			image_integrale.at<int>(i,j) = image_source.at<int>(i,j) + image_integrale.at<int>(i,j-1);
-		}
-	}
+	for (int y = 0; y < tailleY; ++y)
+		for (int x = 1; x < tailleX; ++x)
+			image_integrale.at<uint16_t>(y,x) = image_source.at<uint16_t>(y,x) + image_integrale.at<uint16_t>(y,x-1);
 
-	for (int j = 0; j < m; ++j)
-	{
-		for (int i = 1; i < n; ++i)
-		{
-			image_integrale.at<int>(i,j) = image_integrale.at<int>(i,j) + image_integrale.at<int>(i-1,j);
-		}
-	}
+	for (int x = 0; x < tailleX; ++x)
+		for (int y = 1; y < tailleY; ++y)
+			image_integrale.at<uint16_t>(y,x) = image_integrale.at<uint16_t>(y,x) + image_integrale.at<uint16_t>(y-1,x);
 
 	return image_integrale;
 }
