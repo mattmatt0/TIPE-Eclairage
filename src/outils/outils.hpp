@@ -202,9 +202,3 @@ void affiche_image_signee(string titre, Mat m)
 	attend_q();
 }
 
-vector<array<uint16_t, 4>> rectangles_englobant(Mat m)
-{
-	Size taille = m.size();
-	int tailleX = tailleX.width;
-	int tailleY = tailleY.height;
-}
