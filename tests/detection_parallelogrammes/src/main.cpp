@@ -20,7 +20,8 @@ int main(int argc, char** argv)
 	imshow("Image integrale", integrale_disp*255);
 
 
-	for(auto const& rect : rectangles_englobant(integrale, image_source))
+	vector<array<int, 4>> rectangles =  rectangles_englobant(integrale, image_source);
+	for(auto const& rect : rectangles)
 	{
 		printf("%d %d %d %d\n", rect.at(0), rect.at(1), rect.at(2), rect.at(3));
 		rectangle(dessin, Point(rect.at(0),rect.at(1)), Point(rect.at(2), rect.at(3)), 255, 4);
