@@ -159,18 +159,18 @@ Mat precalcul_integral(Mat image_source)
 	Size taille = image_source.size();
 	int tailleX = taille.width;
 	int tailleY = taille.height;
-	Mat image_integrale = Mat::zeros(taille, CV_16UC1);
+	Mat image_integrale = Mat::zeros(taille, CV_32SC1);
 	
 	for (int y = 0; y < tailleY; ++y)
-		image_integrale.at<uint16_t>(y,0) = image_source.at<uint16_t>(y,0);
+		image_integrale.at<int32_t>(y,0) = image_source.at<uint8_t>(y,0);
 
 	for (int y = 0; y < tailleY; ++y)
 		for (int x = 1; x < tailleX; ++x)
-			image_integrale.at<uint16_t>(y,x) = image_source.at<uint16_t>(y,x) + image_integrale.at<uint16_t>(y,x-1);
+			image_integrale.at<int32_t>(y,x) = image_source.at<uint8_t>(y,x) + image_integrale.at<int32_t>(y,x-1);
 
 	for (int x = 0; x < tailleX; ++x)
 		for (int y = 1; y < tailleY; ++y)
-			image_integrale.at<uint16_t>(y,x) = image_integrale.at<uint16_t>(y,x) + image_integrale.at<uint16_t>(y-1,x);
+			image_integrale.at<int32_t>(y,x) = image_integrale.at<int32_t>(y,x) + image_integrale.at<int32_t>(y-1,x);
 
 	return image_integrale;
 }
