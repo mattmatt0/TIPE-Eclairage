@@ -180,18 +180,19 @@ Mat image_integrale(Mat image_source)
 int aire(Mat m, int x1, int y1, int x2, int y2)
 {
 	// Renvoie la somme des valeurs dans l'image représentée par l'image intégrale `m`, entre (x1, y1) et (x2, y2) inclus.
+	
 	int aire;
 	if(x1 > 0)
 	{
 		if(y1 > 0)
-			aire = m.at<int32_t>(y2,x2) - m.at<int32_t>(y1,x2) - m.at<int32_t>(y2,x1) + m.at<int32_t>(x1,y1);
+			aire = m.at<int32_t>(y2,x2) - m.at<int32_t>(y1-1,x2) - m.at<int32_t>(y2,x1-1) + m.at<int32_t>(y1-1,x1-1);
 		else
-			aire = m.at<int32_t>(y2,x2) - m.at<int32_t>(y2, x1);
+			aire = m.at<int32_t>(y2,x2) - m.at<int32_t>(y2, x1-1);
 	}
 	else
 	{
 		if(y1 > 0)
-			aire = m.at<int32_t>(y2,x2) - m.at<int32_t>(y1, x2);
+			aire = m.at<int32_t>(y2,x2) - m.at<int32_t>(y1-1, x2);
 		else
 			aire = m.at<int32_t>(y2,x2);
 	}

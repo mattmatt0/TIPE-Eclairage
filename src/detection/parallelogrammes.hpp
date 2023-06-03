@@ -18,44 +18,48 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 	
 	for(int x = 0; x < tailleX; ++x)
 	{
-		// Essaie de prolonger les segments déjà trouvés
-		printf("========== LISTE DES SEGMENTS À x=%d ===============\n", x);
-		for(auto const& segment : segments)
+		if(!segments.empty())
 		{
-			printf("%d -> [%d, %d]\n", segment.at(2), segment.at(0), segment.at(1));
+			printf("========== LISTE DES SEGMENTS À x=%d ===============\n", x);
+			for(auto const& segment : segments)
+				printf("%d -> [%d, %d]\n", segment.at(2), segment.at(0), segment.at(1));
 		}
+
+
+
+		// Essaie de prolonger les segments déjà trouvés
 		auto segment = segments.begin();
 		while(segment != segments.end())
 		{
+			deb_seg = (*segment).at(0) - 1; 
+			fin_seg = (*segment).at(1) + 1;
 			// Prolonge le segment ...
 			// ... en haut
 			if(segment != segments.begin())
-			{
 				deb_zone = (*prev(segment)).at(1);
-				deb_seg--;
-				while(aire(m_int, (*segment).at(2)-1, deb_seg, x, deb_seg) != 0 && --deb_seg >= deb_zone);
-				(*segment).at(0) = deb_seg+1;
-			}
+			else deb_zone = 0;
+
+			printf("Aire(%d, %d, %d, %d) = %d\n", (*segment).at(2), deb_seg, x, deb_seg, aire(m_int, (*segment).at(2), deb_seg, x, deb_seg+1));
+			while(aire(m_int, (*segment).at(2), deb_seg, x, deb_seg) != 0 && --deb_seg >= deb_zone);
+			(*segment).at(0) = deb_seg+1;
 			
 			// ... puis en bas
 			if(next(segment) != segments.end())
-			{
 				fin_zone = (*next(segment)).at(0);
-				fin_seg++;
-				while(aire(m_int, (*segment).at(2)-1, fin_seg, x, fin_seg) != 0 && ++fin_seg <= fin_zone);
-				(*segment).at(1) = fin_seg;
-			}
+			else fin_zone = tailleY - 1;
 
-			// Vérifie si le bout est non vide
-			deb_seg = (*segment).at(0);
-			fin_seg = (*segment).at(1);
-			if(aire(m_int, x, deb_seg, x, fin_seg) == 0)
-			{
-				// Fin de zone détectée: on renvoie alors le rectangle correspondant
-				res.push_back({(*segment).at(2), deb_seg, x-1, fin_seg});
-				segment = segments.erase(segment);
-			}
-			else segment++;
+			while(aire(m_int, (*segment).at(2), fin_seg, x, fin_seg) != 0 && ++fin_seg <= fin_zone);
+			(*segment).at(1) = fin_seg - 1;
+
+			++segment;
+		}
+
+
+		if(!segments.empty())
+		{
+			printf(">== LISTE DES SEGMENTS À x=%d après prolongation ==<\n", x);
+			for(auto const& segment : segments)
+				printf("%d -> [%d, %d]\n", segment.at(2), segment.at(0), segment.at(1));
 		}
 
 		// Fusionne les segments
@@ -75,6 +79,31 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 				else break;
 			}
 		}
+
+
+		if(!segments.empty())
+		{
+			printf(">== LISTE DES SEGMENTS À x=%d après fusion ==<\n", x);
+			for(auto const& segment : segments)
+				printf("%d -> [%d, %d]\n", segment.at(2), segment.at(0), segment.at(1));
+		}
+
+		// Ferme les segments vides
+		for(segment = segments.begin(); segment != segments.end();) 
+		{
+			// Vérifie si le bout est non vide
+			deb_seg = (*segment).at(0);
+			fin_seg = (*segment).at(1);
+			printf("%d, %d, %d, %d, %d\n", x, deb_seg, x, fin_seg, aire(m_int, x, deb_seg, x, fin_seg));
+			if(aire(m_int, x, deb_seg, x, fin_seg) == 0)
+			{
+				// Fin de zone détectée: on renvoie alors le rectangle correspondant
+				res.push_back({(*segment).at(2), deb_seg, x-1, fin_seg});
+				segment = segments.erase(segment);
+			}
+			else segment++;
+		}
+
 
 		// Ajoute ensuite les autres pixels
 		bool en_segment = false;

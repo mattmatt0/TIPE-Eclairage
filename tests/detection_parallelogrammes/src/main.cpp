@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	vector<array<int, 4>> rectangles =  rectangles_englobant(integrale, image_source);
 	for(auto const& rect : rectangles)
 	{
-		printf("%d %d %d %d\n", rect.at(0), rect.at(1), rect.at(2), rect.at(3));
+		//printf("%d %d %d %d\n", rect.at(0), rect.at(1), rect.at(2), rect.at(3));
 		rectangle(dessin, Point(rect.at(0),rect.at(1)), Point(rect.at(2), rect.at(3)), Scalar(0,0,255), 1);
 	}
 
