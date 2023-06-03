@@ -59,7 +59,7 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 		}
 
 		// Fusionne les segments
-		for(auto segment = segments.begin(); segment != segments.end(); ++segment)
+		for(segment = segments.begin(); segment != segments.end(); ++segment)
 		{
 			while(next(segment) != segments.end())
 			{

@@ -196,7 +196,6 @@ int aire(Mat m, int x1, int y1, int x2, int y2)
 			aire = m.at<int32_t>(y2,x2);
 	}
 	return aire;
-
 }
 
 void affiche_image_signee(string titre, Mat m)
