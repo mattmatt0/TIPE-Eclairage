@@ -3,7 +3,7 @@
 
 vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 {
-	// Hyp : m_int est une image intégrale (d'une image binaire) de profondeur 32 bits non signés
+	// Hyp : m_int est une image intégrale (d'une image binaire) de profondeur 32 bits signés
 	// et m est l'image binaire d'origine
 	Size taille = m_int.size();
 	int tailleX = taille.width;
@@ -26,8 +26,8 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 			deb_seg = (*segment).at(0);
 			fin_seg = (*segment).at(1);
 			if(deb_seg > 0)
-				aire = m_int.at<uint32_t>(fin_seg,x) - m_int.at<uint32_t>(deb_seg-1,x);
-			else aire = m_int.at<uint32_t>(fin_seg, x);
+				aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(deb_seg-1,x);
+			else aire = m_int.at<int32_t>(fin_seg, x);
 			if(aire == 0)
 			{
 				// Fin de zone détectée: on renvoie alors le rectangle correspondant
@@ -42,7 +42,7 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 				{
 					deb_zone = (*prev(segment)).at(1);
 					deb_seg--;
-					do aire = m_int.at<uint32_t>(deb_seg,x) - m_int.at<uint32_t>(deb_seg,(*segment).at(2)-1);
+					do aire = m_int.at<int32_t>(deb_seg,x) - m_int.at<int32_t>(deb_seg,(*segment).at(2)-1);
 					while(aire != 0 && --deb_seg >= deb_zone);
 					(*segment).at(0) = deb_seg+1;
 				}
@@ -52,7 +52,7 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 				{
 					fin_zone = (*next(segment)).at(0);
 					fin_seg++;
-					do aire = m_int.at<uint32_t>(fin_seg,x) - m_int.at<uint32_t>(fin_seg,(*segment).at(2)-1);
+					do aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(fin_seg,(*segment).at(2)-1);
 					while(aire != 0 && ++fin_seg <= fin_zone);
 					(*segment).at(1) = fin_seg;
 
