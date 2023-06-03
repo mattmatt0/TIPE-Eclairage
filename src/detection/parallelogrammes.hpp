@@ -15,7 +15,6 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 	int fin_seg;
 	int deb_zone;
 	int fin_zone;
-	int aire;
 	
 	for(int x = 0; x < tailleX; ++x)
 	{
@@ -34,11 +33,7 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 			{
 				deb_zone = (*prev(segment)).at(1);
 				deb_seg--;
-				do
-				{
-					 aire = m_int.at<int32_t>(deb_seg,x) - m_int.at<int32_t>(deb_seg,(*segment).at(2)-1);
-				}
-				while(aire != 0 && --deb_seg >= deb_zone);
+				while(aire(m_int, (*segment).at(2)-1, deb_seg, x, deb_seg) != 0 && --deb_seg >= deb_zone);
 				(*segment).at(0) = deb_seg+1;
 			}
 			
@@ -47,29 +42,14 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 			{
 				fin_zone = (*next(segment)).at(0);
 				fin_seg++;
-				do aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(fin_seg,(*segment).at(2)-1);
-				while(aire != 0 && ++fin_seg <= fin_zone);
+				while(aire(m_int, (*segment).at(2)-1, fin_seg, x, fin_seg) != 0 && ++fin_seg <= fin_zone);
 				(*segment).at(1) = fin_seg;
 			}
 
 			// Vérifie si le bout est non vide
 			deb_seg = (*segment).at(0);
 			fin_seg = (*segment).at(1);
-			if(deb_seg > 0)
-			{
-				if(x > 0)
-					aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(deb_seg-1,x) - m_int.at<int32_t>(fin_seg,x-1) + m_int.at<int32_t>(deb_seg-1,x-1);
-				else
-					aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(deb_seg-1,x);
-			}
-			else
-			{
-				if(x > 0)
-					aire = m_int.at<int32_t>(fin_seg, x) - m_int.at<int32_t>(fin_seg, x-1);
-				else
-					aire = m_int.at<int32_t>(fin_seg, 0);
-			}
-			if(aire == 0)
+			if(aire(m_int, x, deb_seg, x, fin_seg) == 0)
 			{
 				// Fin de zone détectée: on renvoie alors le rectangle correspondant
 				res.push_back({(*segment).at(2), deb_seg, x-1, fin_seg});
