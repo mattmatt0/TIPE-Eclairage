@@ -94,7 +94,6 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 			// Vérifie si le bout est non vide
 			deb_seg = (*segment).at(0);
 			fin_seg = (*segment).at(1);
-			printf("%d, %d, %d, %d, %d\n", x, deb_seg, x, fin_seg, aire(m_int, x, deb_seg, x, fin_seg));
 			if(aire(m_int, x, deb_seg, x, fin_seg) == 0)
 			{
 				// Fin de zone détectée: on renvoie alors le rectangle correspondant
@@ -104,40 +103,25 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 			else segment++;
 		}
 
+		if(!segments.empty())
+		{
+			printf(">== LISTE DES SEGMENTS À x=%d après fermeture ==<\n", x);
+			for(auto const& segment : segments)
+				printf("%d -> [%d, %d]\n", segment.at(2), segment.at(0), segment.at(1));
+		}
+
 
 		// Ajoute ensuite les autres pixels
 		bool en_segment = false;
 
-		if(segments.empty())// && ((x == 0 && m_int.at<int32_t>(tailleY-1, 0) > 0) || m_int.at<int32_t>(tailleY-1,x) > m_int.at<int32_t>(tailleY-1, x-1)))
+			
+		deb_zone = 0;
+		for(auto segment = segments.begin(); segment != segments.end(); ++segment)
 		{
-			for(int i = 0; i < tailleY; ++i)
-			{
-				if(m_orig.at<uint8_t>(i,x) == 0 && en_segment)
-				{
-					en_segment = false;
-					segments.push_back({deb_seg, fin_seg, x});
-				}
-				if(m_orig.at<uint8_t>(i,x) == 1 && en_segment)
-					fin_seg++;
-				if(m_orig.at<uint8_t>(i,x) == 1 && !en_segment)
-				{
-					deb_seg = i;
-					fin_seg = deb_seg;
-					en_segment = true;
-				}
-			}	
-		}
-
-		else for(auto segment = segments.begin(); segment != segments.end(); ++segment)
-		{
-			if(segment == segments.begin())
-				deb_zone = 0;
-			else deb_zone = (*prev(segment)).at(1) + 1;
-			if(next(segment) == segments.end())
-				fin_zone = tailleY - 1;
-			else fin_zone = (*next(segment)).at(0) - 1;
+			fin_zone = (*segment).at(0) - 1;
 			for(int i = deb_zone; i <= fin_zone; ++i)
 			{
+				if(x == 322) printf("i=%d\n", i);
 				if(m_orig.at<uint8_t>(i,x) == 0 && en_segment)
 				{
 					en_segment = false;
@@ -151,6 +135,24 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 					fin_seg = deb_seg;
 					en_segment = true;
 				}
+			}
+			deb_zone = (*segment).at(1) + 1;
+		}
+		fin_zone = tailleY - 1;
+		for(int i = deb_zone; i < fin_zone; ++i)
+		{
+			if(m_orig.at<uint8_t>(i,x) == 0 && en_segment)
+			{
+				en_segment = false;
+				segments.push_back({deb_seg, fin_seg, x});
+			}
+			if(m_orig.at<uint8_t>(i,x) == 1 && en_segment)
+				fin_seg++;
+			if(m_orig.at<uint8_t>(i,x) == 1 && !en_segment)
+			{
+				deb_seg = i;
+				fin_seg = deb_seg;
+				en_segment = true;
 			}
 		}
 	}
