@@ -28,7 +28,31 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 		auto segment = segments.begin();
 		while(segment != segments.end())
 		{
-			// Vérifie si le segment est non vide
+			// Prolonge le segment ...
+			// ... en haut
+			if(segment != segments.begin())
+			{
+				deb_zone = (*prev(segment)).at(1);
+				deb_seg--;
+				do
+				{
+					 aire = m_int.at<int32_t>(deb_seg,x) - m_int.at<int32_t>(deb_seg,(*segment).at(2)-1);
+				}
+				while(aire != 0 && --deb_seg >= deb_zone);
+				(*segment).at(0) = deb_seg+1;
+			}
+			
+			// ... puis en bas
+			if(next(segment) != segments.end())
+			{
+				fin_zone = (*next(segment)).at(0);
+				fin_seg++;
+				do aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(fin_seg,(*segment).at(2)-1);
+				while(aire != 0 && ++fin_seg <= fin_zone);
+				(*segment).at(1) = fin_seg;
+			}
+
+			// Vérifie si le bout est non vide
 			deb_seg = (*segment).at(0);
 			fin_seg = (*segment).at(1);
 			if(deb_seg > 0)
@@ -51,32 +75,8 @@ vector<array<int, 4>> rectangles_englobant(Mat m_int, Mat m_orig)
 				res.push_back({(*segment).at(2), deb_seg, x-1, fin_seg});
 				segment = segments.erase(segment);
 			}
-			else
-			{
-				// Prolonge le segment ...
-				// ... en haut
-				if(segment != segments.begin())
-				{
-					deb_zone = (*prev(segment)).at(1);
-					deb_seg--;
-					do aire = m_int.at<int32_t>(deb_seg,x) - m_int.at<int32_t>(deb_seg,(*segment).at(2)-1);
-					while(aire != 0 && --deb_seg >= deb_zone);
-					(*segment).at(0) = deb_seg+1;
-				}
-				
-				// ... puis en bas
-				if(next(segment) != segments.end())
-				{
-					fin_zone = (*next(segment)).at(0);
-					fin_seg++;
-					do aire = m_int.at<int32_t>(fin_seg,x) - m_int.at<int32_t>(fin_seg,(*segment).at(2)-1);
-					while(aire != 0 && ++fin_seg <= fin_zone);
-					(*segment).at(1) = fin_seg;
-				}
-				segment++;
-			}
+			else segment++;
 		}
-		printf("Fin des prolongations\n");
 
 		// Fusionne les segments
 		for(auto segment = segments.begin(); segment != segments.end(); ++segment)
