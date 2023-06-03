@@ -12,7 +12,19 @@ int main(int argc, char** argv)
 
 	string emplacement = parser.get<string>("img-src");
 	Mat image_source = imread(emplacement, IMREAD_GRAYSCALE);
+	Mat integrale = precalcul_integral(image_source);
+	Mat dessin = image_source.clone() * 255;
 
-	imshow("Image source", image_source*255);
+
+	for(auto const& rect : rectangles_englobant(integrale, image_source))
+	{
+		printf("%d %d %d %d\n", rect.at(0), rect.at(1), rect.at(2), rect.at(3));
+		rectangle(dessin, Point(rect.at(0),rect.at(1)), Point(rect.at(2), rect.at(3)), 255, 4);
+	}
+
+	imshow("Image source", image_source);
+	imshow("Image integrale", integrale/10);
+	imshow("Resultat", dessin);
+	attend_q();
 	return 0;
 }
