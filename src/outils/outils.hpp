@@ -177,14 +177,6 @@ Mat precalcul_integral(Mat image_source)
 
 
 
-int calcul_integral(Mat image_source, int x1, int y1, int x2, int y2)
-{
-	// Calcul image intégrale dans le rectangle de coin supérieur gauche (x1,y1) et de coin inférieur droit (x2,y2)
-	Mat image_integrale = precalcul_integral(image_source);
-	int res = image_integrale.at<uint16_t>(y2,x2) - image_integrale.at<uint16_t>(y2,x1) - image_integrale.at<uint16_t>(y1,x2) + image_integrale.at<uint16_t>(y1,x1);
-	return res;
-}
-
 int aire(Mat m, int x1, int y1, int x2, int y2)
 {
 	// Renvoie la somme des valeurs dans l'image représentée par l'image intégrale `m`, entre (x1, y1) et (x2, y2) inclus.
