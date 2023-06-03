@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 
 	string emplacement = parser.get<string>("img-src");
 	Mat image_source = imread(emplacement, IMREAD_GRAYSCALE);
-	Mat integrale = precalcul_integral(image_source);
+	Mat integrale = image_integrale(image_source);
 	Mat dessin = image_source.clone() * 255;
 	Mat integrale_disp;
 	integrale.convertTo(integrale_disp, CV_32FC1);

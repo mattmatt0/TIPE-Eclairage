@@ -152,7 +152,7 @@ void affiche_noyau_sobel(int ordre_x, int ordre_y, int taille)
 }
 
 
-Mat precalcul_integral(Mat image_source)
+Mat image_integrale(Mat image_source)
 {
 	// Hyp : image_source est en noir et blanc (0 ou 255)
 	// Renvoie la matrice avec les valeurs précalculées pour le calcul d'image intégrale
